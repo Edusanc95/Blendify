@@ -78,21 +78,47 @@ Esto tiene una fácil explicación: la mayoría de programas de generación de s
 
 Lo ideal sería que, a partir de un enunciado de un problema, fuese posible la generación automática de su simulación. Dejando de lado las dificultades que el Procesado de Lenguaje Natural supone (aún dentro de un dominio tan acotado), una primera aproximación puede ser la creación de un lenguaje con un poder expresivo similar al de los enunciados de problemas, al que sea lo más sencillo posible traducir (para un humano) dichos enunciados escritos originalmente en lenguaje natural.
 
-Como plataforma de simulaciones físicas, vamos a considerar Blender, ya que incorpora, entre muchas otras funcionalidades, un motor de físicas muy potente, y, tanto o más importante, una API para Python que expone prácticamente todas las funcionalidades del programa.
+Como plataforma de simulaciones físicas, vamos a considerar Blender, ya que incorpora, entre muchas otras funcionalidades, un motor de físicas muy potente, y, tantoo más importante, una API para Python que expone prácticamente todas las funcionalidades del programa.
 
 Para nuestra práctica, por tanto, consideramos la definición de un lenguaje que permita escribir simulaciones físicas, y la construcción de un procesador de lenguajes que lo traduzca a código Python que use la API de Blender, que posteriormente podrá ser interpretado por este programa para generar una simulación. Nuestro objetivo principal, pues, es simplificar al máximo posible la generación de simulaciones que de otra forma serían muy tediosas de realizar.
 
 \section{Descripción del lenguaje}
 
-Como se ha dicho anteriormente, nuestro lenguaje, llamado X, deberá tener el mismo poder expresivo los enunciados de problemas, y posiblemente, permitir definir ciertos hechos sobre el contexto que se dan por supuesto (tipo de problema, dimensionalidad, etc.). Si analizamos la estructura de los enunciados, nos encontramos con que, primero, se nos da información sobre los elementos que intervienen en el problema (cubo, esfera, polea, rampa, electrón, planeta…) y sus parámetros (masa, velocidad, fuerzas que actúan sobre este…); posteriormente, se suele dar una condición que podemos considerar como de parada de la simulación, y una pregunta (que podemos felizmente obviar) sobre algún parámetro de un elemento en determinado momento. Nuestro lenguaje, pues, deberá permitir declarar diferentes objetos y sus correspondientes atributos, así como ciertos parámetros globales que afecten a toda la simulación, alguna condición de parada, y posiblemente, información sobre qué quiere hacer el usuario con la simulación (ejecutarla, generar una animación, etc.).
+Como se ha dicho anteriormente, nuestro lenguaje, llamado Blendify, deberá tener el mismo poder expresivo los enunciados de problemas, y posiblemente, permitir definir ciertos hechos sobre el contexto que se dan por supuesto (tipo de problema, dimensionalidad, etc.). Si analizamos la estructura de los enunciados, nos encontramos con que, primero, se nos da información sobre los elementos que intervienen en el problema (cubo, esfera, polea, rampa, electrón, planeta…) y sus parámetros (masa, velocidad, fuerzas que actúan sobre este…); posteriormente, se suele dar una condición que podemos considerar como de parada de la simulación, y una pregunta (que podemos felizmente obviar) sobre algún parámetro de un elemento en determinado momento. Nuestro lenguaje, pues, deberá permitir declarar diferentes objetos y sus correspondientes atributos, así como ciertos parámetros globales que afecten a toda la simulación, alguna condición de parada, y posiblemente, información sobre qué quiere hacer el usuario con la simulación (ejecutarla, generar una animación, etc.).
 
 \subsection{Tabla de Tokens}
-
 
 \begin{figure}[H] % we need to specify the letter "H" to put the image in the right place
 \centering
 \includegraphics[width=\linewidth]{TablaTokens.jpg}
 \end{figure}
 
+\subsection{EBNF}
 
+\noindent program ::= \textbf{begin} id\_program body\_program \textbf{end}\\
+body\_program ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action\\
+body\_declaration ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'\\
+attribute\_declaration ::= type\_figure id\_attribute\\
+type\_figure ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}\\
+body\_scene ::= '\{' \{(attribute\_case '=' goal)\} '\}'\\
+attribute\_case := \textbf{Case} id\_case\\
+goal ::=  gplane \textbar gspeed \textbar gcollision \textbar goal2\\
+goal2 ::= '(' goal \{ condition goal \} ')'\\
+body\_action ::= '\{' \textbf{start\_simulation} '\}'\\
+value\_static ::= [position] [rotation] [scale]\\
+value\_dynamic ::= [position] [rotation] [scale] [weight] [speed]\\
+id\_attribute ::= alphabetic \{alphanumeric\}\\
+id\_program ::= alphabetic \{alphanumeric\}\\
+position ::= \textbf{position} coordinates\\
+rotation ::= \textbf{rotation} coordinates\\
+scale ::=  \textbf{scale} coordinates\\
+weight ::= \textbf{weight} real\\
+speed ::= \textbf{speed} coordinates\\
+coordinates ::= '(' real ',' real ','  real ')'\\
+condition ::= \textbf{AND} \textbar \textbf{OR}\\
+alphabetic ::= lower\_case  \textbar  upper\_case\\
+lower\_case ::= a \textbar b \textbar c \textbar d \textbar e \textbar f \textbar g \textbar i \textbar j \textbar k \textbar l \textbar m \textbar n \textbar o \textbar p \textbar q \textbar r \textbar s \textbar t \textbar u \textbar v \textbar w \textbar x \textbar y \textbar z\\
+upper\_case ::= A \textbar B \textbar C \textbar D \textbar E \textbar F \textbar G \textbar H \textbar I \textbar J \textbar K\textbar L \textbar M \textbar N \textbar O \textbar P \textbar Q \textbar R \textbar S \textbar T \textbar U \textbar V \textbar W\textbar X \textbar Y \textbar Z\\
+alphanumeric ::= alphabetic \textbar digit\\
+real ::= digit + [('.' digit + )]
 \end{document}
