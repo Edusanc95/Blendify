@@ -73,7 +73,7 @@
 
 \section{Presentación del problema}
 
-Dentro de la enseñanza de Física, la visualización de los problemas es una herramienta muy importante para que los estudiantes comprendan mejor los conceptos teóricos existentes tras ellos. En este contexto, la simulación es una opción que lleva disponible durante años, pero que está siendo muy infrautilizada.
+Dentro de la enseñanza de Física, la visualización de los problemas es una herramienta muy importante para que los estudiantes comprendan mejor los conceptos teóricos existentes tras ellos. La teoría del aprendizaje de Ausubel\footnote{psicólogo y pedagogo estadounidense de gran importancia para el constructivismo} propone este enfoque, ya que permite al alumno esclarecer y dotar de utilidad aquello que está aprendiendo \cite{ausubel1983teoria}. En este contexto, la simulación es una opción que lleva disponible durante años, pero que está siendo muy infrautilizada.
 
 Esto tiene una fácil explicación: la mayoría de programas de generación de simulaciones físicas imponen interfaces gráficas que requieren una inversión de tiempo grande por parte del usuario: partiendo de un enunciado textual de un problema, el usuario, que puede ser tanto un profesor como un estudiante de física, se ve obligado a traducirlo manualmente a un formato gráfico, lidiando muchas veces con interfaces de usuario tediosas que hacen perder mucho tiempo, tanto para aprenderlas, como por las operaciones repetitivas que deben realizarse. 
 
@@ -120,7 +120,7 @@ Digit            & 0 ,…, 9       & \makecell{1 \textbar 2 \textbar 3 \textbar 
 
 \subsection{EBNF}
 
-Una vez tenemos definidos nuestros tokens, podemos comenzar a especificar nuestro lenguaje. Como producción de partida se ha pensado en una que contenga terminales simples para que el usuario (normalmente destinado a aquellos que no tiene mucha experiencia en el campo de la programación) no tenga dificultades a la hora de crear diferentes escenarios, ya que la herramienta está pensada para ayudar en el campo de la física. La producción sería la siguiente: \\ \\
+Una vez tenemos definidos nuestros \textit{tokens}, podemos comenzar a especificar nuestro lenguaje. Como producción de partida se ha pensado en una que contenga terminales simples para que el usuario (normalmente destinado a aquellos que no tiene mucha experiencia en el campo de la programación) no tenga dificultades a la hora de crear diferentes escenarios, ya que la herramienta está pensada para ayudar en el campo de la física. La producción sería la siguiente: \\ \\
 \noindent \textit{program} ::= \textbf{begin} id\_program body\_program \textbf{end}.
 
 Se pretende que el usuario define el comienzo y el fin del programa para ayudarle a no cometer errores que puedan entorpecer el desarrollo del mismo.
@@ -196,5 +196,9 @@ Con estas 5 producciones se intenta definir la posición, rotación, escala, pes
 \noindent \textit{real} ::= digit + [('.' digit + )].
 
 Finalmente, \textit{real} será aquella producción que permita generar números reales.
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{biblist}
 
 \end{document}
