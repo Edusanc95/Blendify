@@ -16,6 +16,7 @@
 \usepackage{subfigure} % allows to include subfigures
 \setpapersize{A4} % A4 format
 \usepackage{color}
+\usepackage{makecell}
 \definecolor{gray97}{gray}{.97}
 \definecolor{gray75}{gray}{.75}
 \definecolor{gray45}{gray}{.45}
@@ -88,37 +89,85 @@ Como se ha dicho anteriormente, nuestro lenguaje, llamado Blendify, deberá tene
 
 \subsection{Tabla de Tokens}
 
-\begin{figure}[H] % we need to specify the letter "H" to put the image in the right place
+\begin{table}[H]
 \centering
-\includegraphics[width=\linewidth]{TablaTokens.jpg}
-\end{figure}
+\begin{tabular}{| c | c | c |} \hline
+\textbf{Tokens}            & \textbf{Lexeme} &  \textbf{Pattern} \\\hline
+Assign            &   =     & =        \\\hline
+Comma             & ,       & ,        \\\hline
+Open Bracket           & \{       & \{        \\\hline
+Closed Bracket           & \}       & \}       \\\hline
+Case              &  Case      & Case        \\\hline
+scene             & scene       & scene        \\\hline
+start\_simulation & start\_simulation       & start\_simulation        \\\hline
+condition         & AND \textbar OR       & AND \textbar OR        \\\hline
+Open parentheses       & (       & (        \\\hline
+Closed parentheses       & )       & )        \\\hline
+Type Figure       & static, dynamic       & static, dynamic        \\\hline
+Type Value        &  \makecell{position, rotation, scale \\ weight, speed}    & \makecell{position \textbar rotation \textbar scale \\\textbar weight \textbar speed}        \\\hline
+From Figure       & \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, Ramp}       & \makecell{Cube \textbar Sphere \textbar Cone \\ Cylinder \textbar Force\_field \textbar Ramp}        \\\hline
+Coordinates       & (1.2, 1.2, 1.2)       & '(' real ',' real ',' real ')'        \\\hline
+Alphabetic        & a ,…, z , A ,…, Z       &  lower\_case \textbar  upper\_case       \\\hline
+lower\_case        & a ,..., z       & [a-z] \\\hline
+upper\_case        & A ,..., Z       & [A-Z] \\\hline
+Real              & 23.21       &  digit + [('.' digit + )]        \\\hline
+Digit            & 0 ,…, 9       & \makecell{1 \textbar 2 \textbar 3 \textbar 4 \textbar 5 \\ 6 \textbar 7 \textbar 8 \textbar 9 \textbar 0}        \\\hline
+\end{tabular}
+\caption{\label{tab:widgets}Table of tokens.}
+\end{table}
 
 \subsection{EBNF}
 
-\noindent program ::= \textbf{begin} id\_program body\_program \textbf{end}\\
-body\_program ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action\\
-body\_declaration ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'\\
-attribute\_declaration ::= type\_figure id\_attribute\\
-type\_figure ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}\\
-body\_scene ::= '\{' \{(attribute\_case '=' goal)\} '\}'\\
-attribute\_case := \textbf{Case} id\_case\\
-goal ::=  gplane \textbar gspeed \textbar gcollision \textbar goal2\\
-goal2 ::= '(' goal \{ condition goal \} ')'\\
-body\_action ::= '\{' \textbf{start\_simulation} '\}'\\
-value\_static ::= [position] [rotation] [scale]\\
-value\_dynamic ::= [position] [rotation] [scale] [weight] [speed]\\
-id\_attribute ::= alphabetic \{alphanumeric\}\\
-id\_program ::= alphabetic \{alphanumeric\}\\
-position ::= \textbf{position} coordinates\\
-rotation ::= \textbf{rotation} coordinates\\
-scale ::=  \textbf{scale} coordinates\\
-weight ::= \textbf{weight} real\\
-speed ::= \textbf{speed} coordinates\\
-coordinates ::= '(' real ',' real ','  real ')'\\
-condition ::= \textbf{AND} \textbar \textbf{OR}\\
-alphabetic ::= lower\_case  \textbar  upper\_case\\
-lower\_case ::= a \textbar b \textbar c \textbar d \textbar e \textbar f \textbar g \textbar i \textbar j \textbar k \textbar l \textbar m \textbar n \textbar o \textbar p \textbar q \textbar r \textbar s \textbar t \textbar u \textbar v \textbar w \textbar x \textbar y \textbar z\\
-upper\_case ::= A \textbar B \textbar C \textbar D \textbar E \textbar F \textbar G \textbar H \textbar I \textbar J \textbar K\textbar L \textbar M \textbar N \textbar O \textbar P \textbar Q \textbar R \textbar S \textbar T \textbar U \textbar V \textbar W\textbar X \textbar Y \textbar Z\\
-alphanumeric ::= alphabetic \textbar digit\\
-real ::= digit + [('.' digit + )]
+\noindent \textit{program} ::= \textbf{begin} id\_program body\_program \textbf{end}
+
+\noindent \textit{body\_program} ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action
+
+\noindent\textit{body\_declaration} ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'
+
+\noindent \textit{attribute\_declaration} ::= type\_figure id\_attribute
+
+\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}
+
+\noindent \textit{body\_scene} ::= '\{' \{(attribute\_case '=' goal)\} '\}'
+
+\noindent \textit{attribute\_case} := \textbf{Case} id\_case
+
+\noindent \textit{goal}::=  gplane \textbar gspeed \textbar gcollision \textbar goal2
+
+\noindent \textit{goal2} ::= '(' goal \{ condition goal \} ')'
+
+\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} '\}'
+
+\noindent \textit{value\_static} ::= [position] [rotation] [scale]
+
+\noindent \textit{value\_dynamic} ::= [position] [rotation] [scale] [weight] [speed]
+
+\noindent \textit{id\_attribute} ::= alphabetic \{alphanumeric\}
+
+\noindent \textit{id\_program} ::= alphabetic \{alphanumeric\}
+
+\noindent \textit{position} ::= \textbf{position} coordinates
+
+\noindent \textit{rotation} ::= \textbf{rotation} coordinates
+
+\noindent \textit{scale} ::=  \textbf{scale} coordinates
+
+\noindent \textit{weight} ::= \textbf{weight} real
+
+\noindent \textit{speed} ::= \textbf{speed} coordinates
+
+\noindent \textit{coordinates} ::= '(' real ',' real ','  real ')'
+
+\noindent \textit{condition} ::= \textbf{AND} \textbar \textbf{OR}
+
+\noindent \textit{alphabetic} ::= lower\_case  \textbar  upper\_case
+
+\noindent \textit{lower\_case} ::= [a-z]
+
+\noindent \textit{upper\_case} ::=[A-Z]
+
+\noindent \textit{alphanumeric} ::= alphabetic \textbar digit
+
+\noindent \textit{rea}l ::= digit + [('.' digit + )]
+
 \end{document}
