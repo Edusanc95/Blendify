@@ -1,0 +1,3 @@
+//ignore files that generate Latex
+*.bst
+*.synctex.gz
