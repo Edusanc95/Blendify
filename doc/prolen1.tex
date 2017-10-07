@@ -1,7 +1,7 @@
 % sample template
 
 \documentclass[12pt]{article}
-\usepackage[spanish]{babel}
+\usepackage[spanish,es-tabla]{babel} % es-tabla changes "cuadro" to "tabla"
 \usepackage{natbib}
 \usepackage{url}
 \usepackage[utf8x]{inputenc}
@@ -44,7 +44,7 @@
 \begin{titlepage}
 	\centering
     \vspace*{0.5 cm}
-    \includegraphics[scale = 0.1]{informatica.png}\\[1.0 cm]										% University Logo
+    \includegraphics[scale = 0.15]{informatica.png}\\[1.0 cm]										% University Logo
     \textsc{\LARGE Universidad de Castilla-La Mancha\newline\newline Escuela Superior De Informática}\\[2.0 cm]		% University Name
 	\textsc{\Large Memoria de Prácticas}\\[0.5 cm]												% Subject
 	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
@@ -85,11 +85,13 @@ Para nuestra práctica, por tanto, consideramos la definición de un lenguaje qu
 
 \section{Descripción del lenguaje}
 
-Como se ha dicho anteriormente, nuestro lenguaje, llamado Blendify, deberá tener el mismo poder expresivo los enunciados de problemas, y posiblemente, permitir definir ciertos hechos sobre el contexto que se dan por supuesto (tipo de problema, dimensionalidad, etc.). Si analizamos la estructura de los enunciados, nos encontramos con que, primero, se nos da información sobre los elementos que intervienen en el problema (cubo, esfera, polea, rampa, electrón, planeta…) y sus parámetros (masa, velocidad, fuerzas que actúan sobre este…); posteriormente, se suele dar una condición que podemos considerar como de parada de la simulación, y una pregunta (que podemos felizmente obviar) sobre algún parámetro de un elemento en determinado momento. Nuestro lenguaje, pues, deberá permitir declarar diferentes objetos y sus correspondientes atributos, así como ciertos parámetros globales que afecten a toda la simulación, alguna condición de parada, y posiblemente, información sobre qué quiere hacer el usuario con la simulación (ejecutarla, generar una animación, etc.).
+Como se ha dicho anteriormente, nuestro lenguaje, llamado \textbf{Blendify}, deberá tener el mismo poder expresivo los enunciados de problemas, y posiblemente, permitir definir ciertos hechos sobre el contexto que se dan por supuesto (tipo de problema, dimensionalidad, etc.). Si analizamos la estructura de los enunciados, nos encontramos con que, primero, se nos da información sobre los elementos que intervienen en el problema (cubo, esfera, polea, rampa, electrón, planeta…) y sus parámetros (masa, velocidad, fuerzas que actúan sobre este…); posteriormente, se suele dar una condición que podemos considerar como de parada de la simulación, y una pregunta (que podemos felizmente obviar) sobre algún parámetro de un elemento en determinado momento. Nuestro lenguaje, pues, deberá permitir declarar diferentes objetos y sus correspondientes atributos, así como ciertos parámetros globales que afecten a toda la simulación, alguna condición de parada, y posiblemente, información sobre qué quiere hacer el usuario con la simulación (ejecutarla, generar una animación, etc.).
 
 \subsection{Tabla de Tokens}
 
-\begin{table}[H]
+En esta sección se muestra la tabla de \textit{tokens} que componen le vocabulario de nuestro lenguaje ---  ver Tabla \ref{tab:Tokens}. Esta tabla nos ayudará a formar las producciones que generarán nuestro lenguaje final. En el siguiente apartado se podrá ver como se ha hecho uso de estos \textit{tokens} en las diferentes producciones.
+
+\begin{table}
 \centering
 \begin{tabular}{| c | c | c |} \hline
 \textbf{Tokens}            & \textbf{Lexeme} &  \textbf{Pattern} \\\hline
@@ -113,61 +115,86 @@ upper\_case        & A ,..., Z       & [A-Z] \\\hline
 Real              & 23.21       &  digit + [('.' digit + )]        \\\hline
 Digit            & 0 ,…, 9       & \makecell{1 \textbar 2 \textbar 3 \textbar 4 \textbar 5 \\ 6 \textbar 7 \textbar 8 \textbar 9 \textbar 0}        \\\hline
 \end{tabular}
-\caption{\label{tab:widgets}Tabla de tokens.}
+\caption{\label{tab:Tokens}Tabla de tokens.}
 \end{table}
 
 \subsection{EBNF}
 
-\noindent \textit{program} ::= \textbf{begin} id\_program body\_program \textbf{end}
+Una vez tenemos definidos nuestros tokens, podemos comenzar a especificar nuestro lenguaje. Como producción de partida se ha pensado en una que contenga terminales simples para que el usuario (normalmente destinado a aquellos que no tiene mucha experiencia en el campo de la programación) no tenga dificultades a la hora de crear diferentes escenarios, ya que la herramienta está pensada para ayudar en el campo de la física. La producción sería la siguiente: \\ \\
+\noindent \textit{program} ::= \textbf{begin} id\_program body\_program \textbf{end}.
 
-\noindent \textit{body\_program} ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action
+Se pretende que el usuario define el comienzo y el fin del programa para ayudarle a no cometer errores que puedan entorpecer el desarrollo del mismo.
 
-\noindent\textit{body\_declaration} ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'
+\noindent \textit{body\_program} ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action.
 
-\noindent \textit{attribute\_declaration} ::= type\_figure id\_attribute
+Como se ha mencionado anteriormente, el objetivo de esta producción sería el mismo, ya que hay una parte de declaración de variables, otra de escenarios y acciones.
 
-\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}
+\noindent\textit{body\_declaration} ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'.
 
-\noindent \textit{body\_scene} ::= '\{' \{(attribute\_case '=' goal)\} '\}'
+\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} '\}'.
 
-\noindent \textit{attribute\_case} := \textbf{Case} id\_case
+\noindent \textit{body\_scene} ::= '\{' \{(attribute\_case '=' goal)\} '\}'.
 
-\noindent \textit{goal}::=  gplane \textbar gspeed \textbar gcollision \textbar goal2
+Estas tres producciones defininen los campos de declaraciones, acciones y escenearios. Básicamente, lo que haremos en estos apartados será definir un tipo, el cual irá aosciado a un identificador. Por ejemplo, en el caso de \textit{body\_declaration} definiremos si las variables son estáticas (objetos que tendrán posición, rotación y escala) o dinámicas (objetos que tendrán velocidad y peso, además de las mencionadas anteriormente), además de especificar su tipo e identificador. En el caso de \textit{body\_scene} sería lo mismo obviando \textbf{static} y \textbf{dynamic}.
 
-\noindent \textit{goal2} ::= '(' goal \{ condition goal \} ')'
+\noindent \textit{attribute\_declaration} ::= type\_figure id\_attribute.
 
-\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} '\}'
+\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}.
 
-\noindent \textit{value\_static} ::= [position] [rotation] [scale]
+Estas tres ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: \textbf{Cube}, \textbf{Sphere}, \textbf{Cone}, \textbf{Cylinder}, \textbf{Force\_field}, \textbf{Ramp}, \textbf{Plane}. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
 
-\noindent \textit{value\_dynamic} ::= [position] [rotation] [scale] [weight] [speed]
+\noindent \textit{attribute\_case} := \textbf{Case} id\_case.
 
-\noindent \textit{id\_attribute} ::= alphabetic \{alphanumeric\}
+Aunque se ha mencionado anteriormente, \textit{attribute\_case} define el tipo del escenario que va a ser creado.  \textbf{Case} es una palabra reservada que hace mención al tipo de variable escenario. \textit{id\_case} concreta el nombre que tendrá un escenario en concreto. La formación de \textit{id\_case} será el mismo que \textit{id\_attribute}.
 
-\noindent \textit{id\_program} ::= alphabetic \{alphanumeric\}
+\noindent \textit{goal}::=  gplane \textbar gspeed \textbar gcollision \textbar goal2.
 
-\noindent \textit{position} ::= \textbf{position} coordinates
+\noindent \textit{goal2} ::= '(' goal \{ condition goal \} ')'.
 
-\noindent \textit{rotation} ::= \textbf{rotation} coordinates
+\textit{goal} y \textit{goal2} nos permitirán crear condiciones a la hora de crear escenearios. Con estas producciones podremos definir una o diferentes metas que ayudarán al usuario a tener diferentes punto de vista de su problema.
 
-\noindent \textit{scale} ::=  \textbf{scale} coordinates
+\noindent \textit{value\_static} ::= [position] [rotation] [scale].
 
-\noindent \textit{weight} ::= \textbf{weight} real
+\noindent \textit{value\_dynamic} ::= [position] [rotation] [scale] [weight] [speed].
 
-\noindent \textit{speed} ::= \textbf{speed} coordinates
+\textit{value\_static} y \textit{value\_dynamic} serán aquellas producciones que permitan definir si un objeto será estático, es decir, no podrá moverse, o dinámico, tendrá una velocidad y peso asociados.
 
-\noindent \textit{coordinates} ::= '(' real ',' real ','  real ')'
+\noindent \textit{id\_attribute} ::= alphabetic \{alphanumeric\}.
 
-\noindent \textit{condition} ::= \textbf{AND} \textbar \textbf{OR}
+\noindent \textit{id\_program} ::= alphabetic \{alphanumeric\}.
 
-\noindent \textit{alphabetic} ::= lower\_case  \textbar  upper\_case
+\noindent \textit{position} ::= \textbf{position} coordinates.
 
-\noindent \textit{lower\_case} ::= [a-z]
+\noindent \textit{rotation} ::= \textbf{rotation} coordinates.
 
-\noindent \textit{upper\_case} ::=[A-Z]
+\noindent \textit{scale} ::=  \textbf{scale} coordinates.
 
-\noindent \textit{alphanumeric} ::= alphabetic \textbar digit
+\noindent \textit{weight} ::= \textbf{weight} real.
 
-\noindent \textit{rea}l ::= digit + [('.' digit + )]
+\noindent \textit{speed} ::= \textbf{speed} coordinates.
+
+Con estas 5 producciones se intenta definir la posición, rotación, escala, peso y velocidad de un objeto en un escenario específico. Todas ellas se formarán mediante coordenadas (conjunto de 3 valores definidos por los ejes 'x', 'y', 'z' especificado en \textit{coordinates}) menos el peso, que será un número real.
+
+\noindent \textit{coordinates} ::= '(' real ',' real ','  real ')'.
+
+\noindent \textit{condition} ::= \textbf{AND} \textbar \textbf{OR}.
+
+\textit{condition} producción que contiene las condiciones lógicas \textbf{AND} y \textbf{OR}.
+
+\noindent \textit{alphabetic} ::= lower\_case  \textbar  upper\_case.
+
+\noindent \textit{lower\_case} ::= [a-z].
+
+\noindent \textit{upper\_case} ::=[A-Z].
+
+\textit{alphabetic} es aquella producción que genera letras minúsculas debido a \textit{lower\_case} y letras mayúsculas debido a \textit{upper\_case}.
+
+\noindent \textit{alphanumeric} ::= alphabetic \textbar digit.
+
+\textit{alphanumeric} será la producción que genere tanto letras, minúsculas o mayúsculas, como dígitos.
+
+\noindent \textit{real} ::= digit + [('.' digit + )].
+
+Finalmente, \textit{real} será aquella producción que permita generar números reales.
 
 \end{document}
