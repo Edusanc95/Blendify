@@ -10,7 +10,7 @@ class Utility {
 	    put("end", "end");
 	    put("declaration", "declaration");
 	    put("scene", "scene");
-	    put("action", "type_figure");
+	    put("action", "action");
 	    put("static", "type_figure");
 	    put("dynamic", "type_figure");
 	    put("position", "type_value");
@@ -18,13 +18,13 @@ class Utility {
 	    put("rotation", "type_value");
 	    put("weight", "type_value");
 	    put("speed", "type_value");
-	    put("Cube", "type_figure");
-	    put("Sphere" , "type_figure");
-	    put("Cone" , "type_figure");
-	    put("Cylinder" , "type_figure");
-	    put("Force_field" , "type_figure");
-	    put("Ramp" , "type_figure");
-	    put("Plane" , "type_figure");
+	    put("Cube", "form_figure");
+	    put("Sphere" , "form_figure");
+	    put("Cone" , "form_figure");
+	    put("Cylinder" , "form_figure");
+	    put("Force_field" , "form_figure");
+	    put("Ramp" , "form_figure");
+	    put("Plane" , "form_figure");
 	}};
 	
     public static String keyWord ( String cadena ) {
