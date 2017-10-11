@@ -16,10 +16,7 @@ public void printDetected(String token) {
 "{"		 {printDetected("OB");}
 "}"		 {printDetected("CB");}
 ["Cube"|"Sphere"|"Cone"|"Cylinder"|"Force_field"|"Ramp"|"Plane"]	{printDetected("type_figure");}
-body_scene ::= ‘{‘ {(attribute_case ‘=’ goal)} ’}’
-attribute_case := Case id_case
-goal ::=  gplane | gspeed | gcollision | goal2
-goal2 ::= ‘(‘ goal { condition goal } ‘)’
+["gplane"|"gspeed"|"gcollision"]					{printDetected("type_goal");}
 ["position"|"rotation"|"scale"|"weight"|"speed"]	{printDetected("value");}
 ","	      {printDetected("Comma");}
 (	      {printDetected("OP");}
