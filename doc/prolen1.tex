@@ -1,5 +1,3 @@
-% sample template
-
 \documentclass[12pt]{article}
 \usepackage[spanish,es-tabla]{babel} % es-tabla changes "cuadro" to "tabla"
 \usepackage{natbib}
@@ -22,9 +20,9 @@
 \definecolor{gray45}{gray}{.45}
 \setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
 
-\title{Blendify: Lenguaje para la definición de simulaciones físicas}			% Title
+\title{Blendify: Lenguaje para la definición de simulaciones físicas}												% Title
 \author{Alberto Aranda García \\ Cristian Gómez Portes \\ Daniel Pozo Romero \\ Eduardo Sánchez López}				% Author
-\date{\today}				%Current  Date
+\date{\today}																										%Current  Date
 
 \makeatletter
 \let\thetitle\@title
@@ -44,9 +42,9 @@
 \begin{titlepage}
 	\centering
     \vspace*{0.5 cm}
-    \includegraphics[scale = 0.15]{informatica.png}\\[1.0 cm]										% University Logo
+    \includegraphics[scale = 0.15]{informatica.png}\\[1.0 cm]														% University Logo
     \textsc{\LARGE Universidad de Castilla-La Mancha\newline\newline Escuela Superior De Informática}\\[2.0 cm]		% University Name
-	\textsc{\Large Memoria de Prácticas}\\[0.5 cm]												% Subject
+	\textsc{\Large Procesadores de Lenguajes}\\[0.5 cm]																	% Subject
 	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
 	{ \huge \bfseries \thetitle}\\
 	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
@@ -73,7 +71,7 @@
 
 \section{Presentación del problema}
 
-Dentro de la enseñanza de Física, la visualización de los problemas es una herramienta muy importante para que los estudiantes comprendan mejor los conceptos teóricos existentes tras ellos. La teoría del aprendizaje de Ausubel\footnote{psicólogo y pedagogo estadounidense de gran importancia para el constructivismo} propone este enfoque, ya que permite al alumno esclarecer y dotar de utilidad aquello que está aprendiendo \cite{ausubel1983teoria}. En este contexto, la simulación es una opción que lleva disponible durante años, pero que está siendo muy infrautilizada.
+Dentro de la enseñanza de Física, la visualización de los problemas es una herramienta muy importante para que los estudiantes comprendan mejor los conceptos teóricos existentes tras ellos. La teoría del aprendizaje de Ausubel\footnote{Psicólogo y pedagogo estadounidense de gran importancia para el constructivismo} propone este enfoque, ya que permite al alumno esclarecer y dotar de utilidad aquello que está aprendiendo \cite{ausubel1983teoria}. En este contexto, la simulación es una opción que lleva disponible durante años, pero que está siendo muy infrautilizada.
 
 Esto tiene una fácil explicación: la mayoría de programas de generación de simulaciones físicas imponen interfaces gráficas que requieren una inversión de tiempo grande por parte del usuario: partiendo de un enunciado textual de un problema, el usuario, que puede ser tanto un profesor como un estudiante de física, se ve obligado a traducirlo manualmente a un formato gráfico, lidiando muchas veces con interfaces de usuario tediosas que hacen perder mucho tiempo, tanto para aprenderlas, como por las operaciones repetitivas que deben realizarse. 
 
@@ -87,35 +85,45 @@ Para nuestra práctica, por tanto, consideramos la definición de un lenguaje qu
 
 Como se ha dicho anteriormente, nuestro lenguaje, llamado \textbf{Blendify}, deberá tener el mismo poder expresivo los enunciados de problemas, y posiblemente, permitir definir ciertos hechos sobre el contexto que se dan por supuesto (tipo de problema, dimensionalidad, etc.). Si analizamos la estructura de los enunciados, nos encontramos con que, primero, se nos da información sobre los elementos que intervienen en el problema (cubo, esfera, polea, rampa, electrón, planeta…) y sus parámetros (masa, velocidad, fuerzas que actúan sobre este…); posteriormente, se suele dar una condición que podemos considerar como de parada de la simulación, y una pregunta (que podemos felizmente obviar) sobre algún parámetro de un elemento en determinado momento. Nuestro lenguaje, pues, deberá permitir declarar diferentes objetos y sus correspondientes atributos, así como ciertos parámetros globales que afecten a toda la simulación, alguna condición de parada, y posiblemente, información sobre qué quiere hacer el usuario con la simulación (ejecutarla, generar una animación, etc.).
 
-\subsection{Tabla de Tokens}
+\subsection{Tabla de Tokens y Palabras Reservadas}
 
-En esta sección se muestra la tabla de \textit{tokens} que componen le vocabulario de nuestro lenguaje ---  ver Tabla \ref{tab:Tokens}. Esta tabla nos ayudará a formar las producciones que generarán nuestro lenguaje final. En el siguiente apartado se podrá ver como se ha hecho uso de estos \textit{tokens} en las diferentes producciones.
+En esta sección se muestra la tabla de \textit{tokens} y palabras reservadas que componen le vocabulario de nuestro lenguaje ---  ver Tabla \ref{tab:Tokens} y \ref{tab:KeyWords}. Esta tabla nos ayudará a formar las producciones que generarán nuestro lenguaje final. En el siguiente apartado se podrá ver como se ha hecho uso de estos \textit{tokens} en las diferentes producciones.
 
 \begin{table}
 \centering
 \begin{tabular}{| c | c | c |} \hline
-\textbf{Tokens}            & \textbf{Lexeme} &  \textbf{Pattern} \\\hline
-Assign            &   =     & =        \\\hline
-Comma             & ,       & ,        \\\hline
-Open Bracket           & \{       & \{        \\\hline
-Closed Bracket           & \}       & \}       \\\hline
-Case              &  Case      & Case        \\\hline
-scene             & scene       & scene        \\\hline
-start\_simulation & start\_simulation       & start\_simulation        \\\hline
-condition         & AND \textbar OR       & AND \textbar OR        \\\hline
-Open parenthesis       & (       & (        \\\hline
-Closed parenthesis       & )       & )        \\\hline
-Type Figure       & static, dynamic       & static, dynamic        \\\hline
-Type Value        &  \makecell{position, rotation, scale \\ weight, speed}    & \makecell{position \textbar rotation \textbar scale \\\textbar weight \textbar speed}        \\\hline
-From Figure       & \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, Ramp}       & \makecell{Cube \textbar Sphere \textbar Cone \\ Cylinder \textbar Force\_field \textbar Ramp}        \\\hline
-Coordinates       & (1.2, 1.2, 1.2)       & '(' real ',' real ',' real ')'        \\\hline
-Alphabetic        & a ,…, z , A ,…, Z       &  lower\_case \textbar  upper\_case       \\\hline
-lower\_case        & a ,..., z       & [a-z] \\\hline
-upper\_case        & A ,..., Z       & [A-Z] \\\hline
-Real              & 23.21       &  digit + [('.' digit + )]        \\\hline
-Digit            & 0 ,…, 9       & \makecell{1 \textbar 2 \textbar 3 \textbar 4 \textbar 5 \\ 6 \textbar 7 \textbar 8 \textbar 9 \textbar 0}        \\\hline
+\textbf{Tokens}   			& \textbf{Lexeme} 										&  \textbf{Pattern} 		\\\hline
+Assign            			& =     												& =        					\\\hline
+Comma             			& ,       												& ,        					\\\hline
+Open Bracket      			& \{       												& \{        				\\\hline
+Closed Bracket    			& \}       												& \}       					\\\hline
+condition         			& AND \textbar OR       								& AND \textbar OR        	\\\hline
+Open parenthesis  			& (       												& (        					\\\hline
+Closed parenthesis			& )       												& )        					\\\hline
+Coordinates       			& (1.2, 1.2, 1.2)       								& '(' real ',' real ',' real ')'       	\\\hline
+Alphabetic        			& a ,..., z , A ,..., Z       							& lower\_case \textbar  upper\_case      \\\hline
+lower\_case       			& a ,..., z       										& [a-z] 					\\\hline
+upper\_case       			& A ,..., Z       										& [A-Z] 					\\\hline
+Real              			& 23.21       											& digit + [('.' digit + )]  \\\hline
+Digit             			& 0 ,..., 9       										& \makecell{1 \textbar 2 \textbar 3 \textbar 4 \textbar 5 \\ 6 \textbar 7 \textbar 8 \textbar 9 \textbar 0}        												\\\hline
 \end{tabular}
 \caption{\label{tab:Tokens}Tabla de tokens.}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{| c | c | c |} \hline
+\textbf{Key Words}          & \textbf{Lexeme} 													&  \textbf{Pattern} 		\\\hline
+begin            			& begin     														& begin        				\\\hline
+end             			& end      															& end        			    \\\hline
+declaration           		& declaration       												& declaration        		\\\hline
+scene           			& scene       														& scene       			  	\\\hline
+start\_simulation 			& start\_simulation       											& start\_simulation        	\\\hline
+type figure       			& static, dynamic       											& static, dynamic        	\\\hline
+type value        			& \makecell{position, rotation, scale \\ weight, speed}				& \makecell{position \textbar rotation \textbar scale \\\textbar weight \textbar speed}        \\\hline
+form figure       			& \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, Ramp}     & \makecell{Cube \textbar Sphere \textbar Cone \\ Cylinder \textbar Force\_field \textbar Ramp}        														  \\\hline
+\end{tabular}
+\caption{\label{tab:KeyWords}Tabla de palabras reservadas.}
 \end{table}
 
 \subsection{EBNF}
