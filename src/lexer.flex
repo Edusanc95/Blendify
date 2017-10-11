@@ -15,6 +15,7 @@ public void printDetected(String token) {
 "dynamic"	 {printDetected("dynamic");}
 "{"		 {printDetected("OB");}
 "}"		 {printDetected("CB");}
+"="		 {printDetected("EQ");}
 ["Cube"|"Sphere"|"Cone"|"Cylinder"|"Force_field"|"Ramp"|"Plane"]	{printDetected("type_figure");}
 ["gplane"|"gspeed"|"gcollision"]					{printDetected("type_goal");}
 ["position"|"rotation"|"scale"|"weight"|"speed"]	{printDetected("value");}
