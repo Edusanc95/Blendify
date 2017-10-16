@@ -1,0 +1,211 @@
+\documentclass[12pt]{article}
+\usepackage[spanish,es-tabla]{babel} % es-tabla changes "cuadro" to "tabla"
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[utf8x]{inputenc}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{float} % allows to place the image or tables where we want to.
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\setlength{\parskip}{3mm} % length between paragraphs
+\usepackage{subfigure} % allows to include subfigures
+\setpapersize{A4} % A4 format
+\usepackage{color}
+\usepackage{makecell}
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+
+\title{Blendify: Language for the definition of physic simulations}												    % Title
+\author{Alberto Aranda García \\ Cristian Gómez Portes \\ Daniel Pozo Romero \\ Eduardo Sánchez López}				% Author
+\date{\today}																										%Current  Date
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+	\centering
+    \vspace*{0.5 cm}
+    \includegraphics[scale = 0.15]{informatica.png}\\[1.0 cm]														% University Logo
+    \textsc{\LARGE Universidad de Castilla-La Mancha\newline\newline Escuela Superior De Informática}\\[2.0 cm]		% University Name
+	\textsc{\Large Procesadores de Lenguajes}\\[0.5 cm]																	% Subject
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}\\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+	
+	\begin{minipage}{0.4\textwidth}
+		\begin{center} \large
+			\emph{Autores:}\\
+			\theauthor\\
+			\vspace*{1 cm}
+			\emph{Fecha:}\\
+			\thedate\\
+			\end{center}
+        
+	\end{minipage}\\[2 cm]
+	
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Problem presentation}
+
+In the teaching of physics, the visualization of problems is a really important tool for the correct comprehension of the theoretical concepts. The Ausubel's Learning Theory\footnote{Psychologist and pedagogue of great importance for the constructivism} talks about this approach, because it allows the students to see how useful is the theoretical concepts in reality\cite{ausubel1983teoria}.. In this context, the simulation is an option that's been available for many years, but it has not been used a lot.
+
+This has an easy explanation, the majority of programs for the generation of physic simulations have graphic interfaces that require a huge amount of time to make something useful out of them: from the problem statement the user has to translate it into a graphic format, which needs time to learn how to use them correctly and for the many repetitive tasks that have to be done.
+
+The ideal scenario would be that, from a problem statement, the generation of simulation will be automatic. But that's not possible using the natural language, even inside this very concrete domain. A first approximation could be the creation of a language with an expressive power similar to the problem statements, one that could be easy to translate (for a human) said statements written originally in natural language.
+
+As a platform for the physic simulations, we are going to use Blender, since it incorporates a very potent physic engine and a Python API that allows to use every functionality of the software by code.
+
+For our practice, we consider the definition of a language that allows the user to write physic simulations, and the construction of a language processor that translates it to Python code, that will be interpreted in Blender to generate said simulation. In summary, our main objective is simplify the generation of physic problems simulations.
+
+\section{Description of the language}
+
+As said previously, our language called \textbf{Blendify}, will have the same expressive power for the creation of program statements, allowing the definition of some facts like the type of problem or the dimensionality. If we analyze the statements structure, we will get to the conclusion that first there's some information about the elements that take part in the problem (Shapes like a cube, sphere, ramp, planet...) and their parameters (mass, speed, force and so on). Alongside this, there is a condition that we can use as a stop for our simulation, for example when an element gets to a certain position, and a question about the state of the world that the student has to solve. Our language then will allow to declare different objects and their respective attributes, alongside some global parameters that affect the entire simulation, a stop condition and will also show in screen information about what the user wants to do with the simulation (start the simulation, generate an animation...)
+\subsection{Tokens table and Reserved words}
+
+In this section we show the \textit{tokens} table and some reserved words that make up the vocabulary of our language. --- ---  see Tabla \ref{tab:Tokens} and \ref{tab:KeyWords}. This table will helps us work to form the productions that will generate our final language. In the next part we show how we used these \textit{tokens} in the productions.
+\begin{table}
+\centering
+\begin{tabular}{| c | c | c |} \hline
+\textbf{Tokens}   			& \textbf{Lexeme} 										&  \textbf{Pattern} 		\\\hline
+Assign            			& =     												& =        					\\\hline
+Comma             			& ,       												& ,        					\\\hline
+Open Bracket      			& \{       												& \{        				\\\hline
+Closed Bracket    			& \}       												& \}       					\\\hline
+condition         			& AND \textbar OR       								& AND \textbar OR        	\\\hline
+Open parenthesis  			& (       												& (        					\\\hline
+Closed parenthesis			& )       												& )        					\\\hline
+Coordinates       			& (1.2, 1.2, 1.2)       								& '(' real ',' real ',' real ')'       	\\\hline
+Alphabetic        			& a ,..., z , A ,..., Z       							& lower\_case \textbar  upper\_case      \\\hline
+lower\_case       			& a ,..., z       										& [a-z] 					\\\hline
+upper\_case       			& A ,..., Z       										& [A-Z] 					\\\hline
+Real              			& 23.21       											& digit + [('.' digit + )]  \\\hline
+Digit             			& 0 ,..., 9       										& \makecell{1 \textbar 2 \textbar 3 \textbar 4 \textbar 5 \\ 6 \textbar 7 \textbar 8 \textbar 9 \textbar 0}        												\\\hline
+\end{tabular}
+\caption{\label{tab:Tokens}Tabla de tokens.}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{| c | c | c |} \hline
+\textbf{Key Words}          & \textbf{Lexeme} 													&  \textbf{Pattern} 		\\\hline
+begin            			& begin     														& begin        				\\\hline
+end             			& end      															& end        			    \\\hline
+declaration           		& declaration       												& declaration        		\\\hline
+scene           			& scene       														& scene       			  	\\\hline
+action           			& action       														& action       			  	\\\hline
+start\_simulation 			& start\_simulation       											& start\_simulation        	\\\hline
+type figure       			& static, dynamic       											& static, dynamic        	\\\hline
+type value        			& \makecell{position, rotation, scale \\ weight, speed}				& \makecell{position \textbar rotation \textbar scale \\\textbar weight \textbar speed}        \\\hline
+form figure       			& \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, Ramp}     & \makecell{Cube \textbar Sphere \textbar Cone \\ Cylinder \textbar Force\_field \textbar Ramp}        														  \\\hline
+\end{tabular}
+\caption{\label{tab:KeyWords}Tabla de palabras reservadas.}
+\end{table}
+
+\subsection{EBNF}
+
+Una vez tenemos definidos nuestros \textit{tokens} y palabras reservadas, podemos comenzar a especificar nuestro lenguaje. Como producción de partida se ha pensado en una que contenga terminales simples para que el usuario (normalmente destinado a aquellos que no tiene mucha experiencia en el campo de la programación) no tenga dificultades a la hora de crear diferentes escenarios, ya que la herramienta está pensada para ayudar en el campo de la física. La producción sería la siguiente: \\ \\
+\noindent \textit{program} ::= \textbf{begin} id\_program body\_program \textbf{end}.
+
+Se pretende que el usuario define el comienzo y el fin del programa para ayudarle a no cometer errores que puedan entorpecer el desarrollo del mismo.
+
+\noindent \textit{body\_program} ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action.
+
+Como se ha mencionado anteriormente, el objetivo de esta producción sería el mismo, ya que hay una parte de declaración de variables, otra de escenarios y acciones.
+
+\noindent\textit{body\_declaration} ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'.
+
+\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} '\}'.
+
+\noindent \textit{body\_scene} ::= '\{' \{(attribute\_case '=' goal)\} '\}'.
+
+Estas tres producciones defininen los campos de declaraciones, acciones y escenearios. Básicamente, lo que haremos en estos apartados será definir un tipo, el cual irá aosciado a un identificador. Por ejemplo, en el caso de \textit{body\_declaration} definiremos si las variables son estáticas (objetos que tendrán posición, rotación y escala) o dinámicas (objetos que tendrán velocidad y peso, además de las mencionadas anteriormente), además de especificar su tipo e identificador. En el caso de \textit{body\_scene} sería lo mismo obviando \textbf{static} y \textbf{dynamic}.
+
+\noindent \textit{attribute\_declaration} ::= type\_figure id\_attribute.
+
+\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}.
+
+Estas tres ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: \textbf{Cube}, \textbf{Sphere}, \textbf{Cone}, \textbf{Cylinder}, \textbf{Force\_field}, \textbf{Ramp}, \textbf{Plane}. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
+
+\noindent \textit{attribute\_case} := \textbf{Case} id\_case.
+
+Aunque se ha mencionado anteriormente, \textit{attribute\_case} define el tipo del escenario que va a ser creado.  \textbf{Case} es una palabra reservada que hace mención al tipo de variable escenario. \textit{id\_case} concreta el nombre que tendrá un escenario en concreto. La formación de \textit{id\_case} será el mismo que \textit{id\_attribute}.
+
+\noindent \textit{goal}::=  gplane \textbar gspeed \textbar gcollision \textbar goal2.
+
+\noindent \textit{goal2} ::= '(' goal \{ condition goal \} ')'.
+
+\textit{goal} y \textit{goal2} nos permitirán crear condiciones a la hora de crear escenearios. Con estas producciones podremos definir una o diferentes metas que ayudarán al usuario a tener diferentes punto de vista de su problema.
+
+\noindent \textit{value\_static} ::= [position] [rotation] [scale].
+
+\noindent \textit{value\_dynamic} ::= [position] [rotation] [scale] [weight] [speed].
+
+\textit{value\_static} y \textit{value\_dynamic} serán aquellas producciones que permitan definir si un objeto será estático, es decir, no podrá moverse, o dinámico, tendrá una velocidad y peso asociados.
+
+\noindent \textit{id\_attribute} ::= alphabetic \{alphanumeric\}.
+
+\noindent \textit{id\_program} ::= alphabetic \{alphanumeric\}.
+
+\noindent \textit{position} ::= \textbf{position} coordinates.
+
+\noindent \textit{rotation} ::= \textbf{rotation} coordinates.
+
+\noindent \textit{scale} ::=  \textbf{scale} coordinates.
+
+\noindent \textit{weight} ::= \textbf{weight} real.
+
+\noindent \textit{speed} ::= \textbf{speed} coordinates.
+
+Con estas 5 producciones se intenta definir la posición, rotación, escala, peso y velocidad de un objeto en un escenario específico. Todas ellas se formarán mediante coordenadas (conjunto de 3 valores definidos por los ejes 'x', 'y', 'z' especificado en \textit{coordinates}) menos el peso, que será un número real.
+
+\noindent \textit{coordinates} ::= '(' real ',' real ','  real ')'.
+
+\noindent \textit{condition} ::= \textbf{AND} \textbar \textbf{OR}.
+
+\textit{condition} producción que contiene las condiciones lógicas \textbf{AND} y \textbf{OR}.
+
+\noindent \textit{alphabetic} ::= lower\_case  \textbar  upper\_case.
+
+\noindent \textit{lower\_case} ::= [a-z].
+
+\noindent \textit{upper\_case} ::=[A-Z].
+
+\textit{alphabetic} es aquella producción que genera letras minúsculas debido a \textit{lower\_case} y letras mayúsculas debido a \textit{upper\_case}.
+
+\noindent \textit{alphanumeric} ::= alphabetic \textbar digit.
+
+\textit{alphanumeric} será la producción que genere tanto letras, minúsculas o mayúsculas, como dígitos.
+
+\noindent \textit{real} ::= digit + [('.' digit + )].
+
+Finalmente, \textit{real} será aquella producción que permita generar números reales.
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{biblist}
+
+\end{document}
