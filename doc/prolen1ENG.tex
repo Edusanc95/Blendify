@@ -1,0 +1,212 @@
+\documentclass[12pt]{article}
+\usepackage[british,UKenglish,USenglish,english,american]{babel}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[utf8x]{inputenc}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{float} % allows to place the image or tables where we want to.
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\setlength{\parskip}{3mm} % length between paragraphs
+\usepackage{subfigure} % allows to include subfigures
+\setpapersize{A4} % A4 format
+\usepackage{color}
+\usepackage{makecell}
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+
+\title{Blendify: Language for the definition of physic simulations}												    % Title
+\author{Alberto Aranda García \\ Cristian Gómez Portes \\ Daniel Pozo Romero \\ Eduardo Sánchez López}				% Author
+\date{\today}																										%Current  Date
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+	\centering
+    \vspace*{0.5 cm}
+    \includegraphics[scale = 0.15]{informatica.png}\\[1.0 cm]														% University Logo
+    \textsc{\LARGE Universidad de Castilla-La Mancha\newline\newline Escuela Superior De Informática}\\[2.0 cm]		% University Name
+	\textsc{\Large Language processors}\\[0.5 cm]																	% Subject
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}\\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+	
+	\begin{minipage}{0.4\textwidth}
+		\begin{center} \large
+			\emph{Authors:}\\
+			\theauthor\\
+			\vspace*{1 cm}
+			\emph{Date:}\\
+			\thedate\\
+			\end{center}
+        
+	\end{minipage}\\[2 cm]
+	
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Problem presentation}
+
+In the teaching of physics, the visualization of problems is a really important tool for the correct comprehension of the theoretical concepts. The Ausubel's Learning Theory\footnote{Psychologist and pedagogue of great importance for the constructivism} talks about this approach, because it allows the students to see how useful is the theoretical concepts in reality\cite{ausubel1983teoria}.. In this context, the simulation is an option that's been available for many years, but it has not been used a lot.
+
+This has an easy explanation, the majority of programs for the generation of physic simulations have graphic interfaces that require a huge amount of time to make something useful out of them: from the problem statement the user has to translate it into a graphic format, which needs time to learn how to use them correctly and for the many repetitive tasks that have to be done.
+
+The ideal scenario would be that, from a problem statement, the generation of simulation will be automatic. But that's not possible using the natural language, even inside this very concrete domain. A first approximation could be the creation of a language with an expressive power similar to the problem statements, one that could be easy to translate (for a human) said statements written originally in natural language.
+
+As a platform for the physic simulations, we are going to use Blender, since it incorporates a very potent physic engine and a Python API that allows to use every functionality of the software by code.
+
+For our practice, we consider the definition of a language that allows the user to write physic simulations, and the construction of a language processor that translates it to Python code, that will be interpreted in Blender to generate said simulation. In summary, our main objective is simplify the generation of physic problems simulations.
+
+\section{Description of the language}
+
+As said previously, our language called \textbf{Blendify}, will have the same expressive power for the creation of program statements, allowing the definition of some facts like the type of problem or the dimensionality. If we analyze the statements structure, we will get to the conclusion that first there's some information about the elements that take part in the problem (Shapes like a cube, sphere, ramp, planet...) and their parameters (mass, speed, force and so on). Alongside this, there is a condition that we can use as a stop for our simulation, for example when an element gets to a certain position, and a question about the state of the world that the student has to solve. Our language then will allow to declare different objects and their respective attributes, alongside some global parameters that affect the entire simulation, a stop condition and will also show in screen information about what the user wants to do with the simulation (start the simulation, generate an animation...)
+\subsection{Tokens table and Reserved words}
+
+In this section we show the \textit{tokens} table and some reserved words that make up the vocabulary of our language. --- ---  see Tabla \ref{tab:Tokens} and \ref{tab:KeyWords}. This table will helps us work to form the productions that will generate our final language. In the next part we show how we used these \textit{tokens} in the productions.
+
+\subsection{EBNF}
+
+
+Once we have defined our \textit{tokens} and reserved words, we can start to specify our language. As the default production we tought in one that contains simple terminals so that the user (We have to remember this software is oriented to people that doesn't have experience in programming) won't have problems when creating different scenes. The production will be the following: \\ \\
+\noindent \textit{program} ::= \textbf{begin} id\_program body\_program \textbf{end}.
+
+The user has to define the start and the end of the program to help he or she to not make any mistakes.
+\noindent \textit{body\_program} ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action.
+
+\begin{table}
+	\centering
+	\begin{tabular}{| c | c | c |} \hline
+		\textbf{Tokens}   			& \textbf{Lexeme} 										&  \textbf{Pattern} 		\\\hline
+		Assign            			& =     												& =        					\\\hline
+		Comma             			& ,       												& ,        					\\\hline
+		Open Bracket      			& \{       												& \{        				\\\hline
+		Closed Bracket    			& \}       												& \}       					\\\hline
+		condition         			& AND \textbar OR       								& AND \textbar OR        	\\\hline
+		Open parenthesis  			& (       												& (        					\\\hline
+		Closed parenthesis			& )       												& )        					\\\hline
+		Coordinates       			& (1.2, 1.2, 1.2)       								& '(' real ',' real ',' real ')'       	\\\hline
+		Alphabetic        			& a ,..., z , A ,..., Z       							& lower\_case \textbar  upper\_case      \\\hline
+		lower\_case       			& a ,..., z       										& [a-z] 					\\\hline
+		upper\_case       			& A ,..., Z       										& [A-Z] 					\\\hline
+		Real              			& 23.21       											& digit + [('.' digit + )]  \\\hline
+		Digit             			& 0 ,..., 9       										& \makecell{1 \textbar 2 \textbar 3 \textbar 4 \textbar 5 \\ 6 \textbar 7 \textbar 8 \textbar 9 \textbar 0}        												\\\hline
+	\end{tabular}
+	\caption{\label{tab:Tokens}Tokens table.}
+\end{table}
+
+\begin{table}
+	\centering
+	\begin{tabular}{| c | c | c |} \hline
+		\textbf{Key Words}          & \textbf{Lexeme} 													&  \textbf{Pattern} 		\\\hline
+		begin            			& begin     														& begin        				\\\hline
+		end             			& end      															& end        			    \\\hline
+		declaration           		& declaration       												& declaration        		\\\hline
+		scene           			& scene       														& scene       			  	\\\hline
+		action           			& action       														& action       			  	\\\hline
+		start\_simulation 			& start\_simulation       											& start\_simulation        	\\\hline
+		type figure       			& static, dynamic       											& static, dynamic        	\\\hline
+		type value        			& \makecell{position, rotation, scale \\ weight, speed}				& \makecell{position \textbar rotation \textbar scale \\\textbar weight \textbar speed}        \\\hline
+		form figure       			& \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, Ramp}     & \makecell{Cube \textbar Sphere \textbar Cone \\ Cylinder \textbar Force\_field \textbar Ramp}        														  \\\hline
+	\end{tabular}
+	\caption{\label{tab:KeyWords}Reserved words table.}
+\end{table}
+
+As mention previously, the objective of this production will be the same, since there is a part for the declaration of the variable, for the scenes and for the actions.
+\noindent\textit{body\_declaration} ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'.
+
+\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} '\}'.
+
+\noindent \textit{body\_scene} ::= '\{' \{(attribute\_case '=' goal)\} '\}'.
+extbf{dynamic}.
+
+This three productions define the declaration, action and scene fields. Basically, what we will do in this part is to define a type, which will be associated to an identifier. For example in the case of \textit{body\_declaration} we will define if the variables are static (objects that will have position, rotation and scale) or dynamic (object that will have speed and weight, alongside the previously mentioned characteristics) and also we will have to define the type and an identifier. In the case of \textit{body\_scene} it will be the same, discarting the \textbf{static} and \textbf{dynamic} part.
+
+\noindent \textit{attribute\_declaration} ::= type\_figure id\_attribute.
+
+\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}.
+
+This last productions are those that define the types of figures that we can specify: \textbf{Cube}, \textbf{Sphere}, \textbf{Cone}, \textbf{Cylinder}, \textbf{Force\_field}, \textbf{Ramp}, \textbf{Plane}. In addition, the identifier can be written if it starts by a letter (In capital letters or not), followed by more letters or numbers, but with only one letter is enough.
+
+\noindent \textit{attribute\_case} := \textbf{Case} id\_case.
+
+As mentioned before, \textit{attribute\_case} defines the type of scene that's going to be created. \textbf{Case} is a reserved word that mentions the type of scene. \textit{id\_case} gives a name to a scene in particular. The formation of \textit{id\_case} is the same as \textit{id\_attribute}.
+
+\noindent \textit{goal}::=  gplane \textbar gspeed \textbar gcollision \textbar goal2.
+
+\noindent \textit{goal2} ::= '(' goal \{ condition goal \} ')'.
+
+\textit{goal} and \textit{goal2} would allow us to create conditions when creating scenes. With these productions we can define one o more different goals that will help the user to see the problem with different points of view.
+
+\noindent \textit{value\_static} ::= [position] [rotation] [scale].
+
+\noindent \textit{value\_dynamic} ::= [position] [rotation] [scale] [weight] [speed].
+
+\textit{value\_static} and \textit{value\_dynamic} are those production that allows us to define if an object will be static, that means it cannot be moved, or dynamic with a defined speed and weight.
+
+\noindent \textit{id\_attribute} ::= alphabetic \{alphanumeric\}.
+
+\noindent \textit{id\_program} ::= alphabetic \{alphanumeric\}.
+
+\noindent \textit{position} ::= \textbf{position} coordinates.
+
+\noindent \textit{rotation} ::= \textbf{rotation} coordinates.
+
+\noindent \textit{scale} ::=  \textbf{scale} coordinates.
+
+\noindent \textit{weight} ::= \textbf{weight} real.
+
+\noindent \textit{speed} ::= \textbf{speed} coordinates.
+
+With these 5 productions we can try to define the position, rotation, scale, weight and speed of an object in a specific scene. All of these characteristics will be formed with coordinates (A set of 3 values defined by the axis 'x', 'y' and 'z' specified in \textit{coordinates}) with the exception of the weight, that will be a real number.
+
+\noindent \textit{coordinates} ::= '(' real ',' real ','  real ')'.
+
+\noindent \textit{condition} ::= \textbf{AND} \textbar \textbf{OR}.
+
+\textit{condition} production that contains the logic conditions \textbf{AND} and \textbf{OR}.
+
+\noindent \textit{alphabetic} ::= lower\_case  \textbar  upper\_case.
+
+\noindent \textit{lower\_case} ::= [a-z].
+
+\noindent \textit{upper\_case} ::=[A-Z].
+
+\textit{alphabetic} is the production that generates lower cases with \textit{lower\_case} and capital letters with \textit{upper\_case}.
+
+\noindent \textit{alphanumeric} ::= alphabetic \textbar digit.
+
+\textit{alphanumeric} will be the production that generates letters (lower cases or capital letters) and digits.
+
+\noindent \textit{real} ::= digit + [('.' digit + )].
+
+Finally, \textit{real} is that production that allows us to generate real numbers.
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{biblist}
+
+\end{document}
