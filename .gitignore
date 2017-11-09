@@ -1,4 +1,4 @@
-#Ignore files that generate Latex
+//ignore files that generate Latex
 *.bst
 *.synctex.gz
 *.blg
