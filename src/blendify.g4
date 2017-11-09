@@ -11,7 +11,8 @@ type_figure             : CUBE | SPHERE | CONE | CYLINDER | FORCE_FIELD | RAMP |
 attribute_case          : CASE id ;
 goal                    : goal_n ;
 goal_n                  : gplane goal_n | gspeed goal_n | gcollision goal_n | ;					// remove left recursion
-goal2					: '(' goal {condition goal} ')' ;
+goal2					: '(' goal condition_goal ')' ;
+condition_goal          : condition goal condition_goal | ;
 gplane                  : 'a' ;																	// example
 gspeed                  : 'b' ; 																// example
 gcollision              : 'c' ; 																// example
@@ -27,7 +28,7 @@ coordinates 			: '(' real ',' real ',' real ')' ;
 condition				: AND | OR ;
 alphabetic 				: LOWER_CASE | UPPER_CASE ;
 alphanumeric 			: alphabetic | DIGIT ;
-real 					: DIGIT ;
+real 					: DIGIT | DIGIT '.' DIGIT ;
 
 // Define Tokens
 BEGIN 					: ( 'b' )( 'e' )( 'g' )( 'i' )( 'n' );
@@ -53,8 +54,8 @@ WEIGHT 					: ( 'w' )( 'e' )( 'i' )( 'g' )( 'h' )( 't' );
 SPEED 					: ( 's' )( 'p' )( 'e' )( 'e' )( 'd' );
 AND 					: ( 'A' )( 'N' )( 'D' );
 OR						: ( 'O' )( 'R' );
-LOWER_CASE              : [a-z];
-UPPER_CASE              : [A-Z];
-DIGIT					: [0-9];
+LOWER_CASE              : [a-z]+;
+UPPER_CASE              : [A-Z]+;
+DIGIT					: [0-9]+;
 
 WS       			    : [ \t\r\n]+ -> skip ; 		// skip spaces, tabs, newlines
