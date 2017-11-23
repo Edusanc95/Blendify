@@ -1,0 +1,11 @@
+begin grammar
+        declaration {
+                static Cube cube = position (1, 1, 1) ;
+        }
+        scene {
+                Case case = axis = x pos = 2
+        }
+        action {
+                start_simulation ;
+        }
+end
