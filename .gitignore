@@ -1,4 +1,4 @@
-//ignore files that generate Latex
+# Ignore files that generate Latex
 *.bst
 *.synctex.gz
 *.blg
@@ -7,3 +7,8 @@
 *.aux
 *.toc
 *.pdf
+
+# Ignore files that generate Antlr4
+*.tokens
+*.class
+*.java
