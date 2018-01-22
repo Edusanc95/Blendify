@@ -1,0 +1,83 @@
+import java_cup.runtime.*;
+import java.io.*;
+
+/* ---------------------- Seccion componentes de codigo de usuario --------------------*/
+parser code {:
+	public static void main(String args[]) throws Exception {
+		FileInputStream fichero=new FileInputStream(args[0]);
+		DataInputStream entrada =new DataInputStream(fichero);
+		try{
+			new parser(new analex(entrada)).parse();
+		}
+		catch ( Exception e) {
+			System.out.println("Incorrect analysis");
+			System.exit(1);}
+		System.out.println("Correct analysis");
+	}
+
+	public void report_error(String message, Object info) {
+       	StringBuffer m = new StringBuffer("Error");
+		System.out.println("Message: " + message);
+		System.out.println("info: " + info.toString());
+		if(info instanceof java_cup.runtime.Symbol) {
+			java_cup.runtime.Symbol s=((java_cup.runtime.Symbol)info);
+			/* ckeck if the row is greater or equal than cero */
+			if(s.left >= 0) {
+				m.append(" in row " + (s.left + 1));
+				/* check if the column is greater or equal than cero */
+				if (s.right >= 0)
+					m.append(", and column " + (s.right + 1));
+			}
+		}
+		m.append(" : " + message);
+		System.err.println(m);
+    }
+
+    public void report_fatal_error(String message, Object info) {
+       	report_error(message, info);
+		System.exit(1);
+    }
+:}
+
+terminal KEYWORD, STATIC_OBJECT, DYNAMIC_OBJECT, LEFTBRACKET, RIGHTBRACKET, EQUAL, SEMICOLON, BEGIN, ACTION, CASE, ID, VALUE_DYNAMIC;
+terminal TYPE_GOAL, VALUE, TYPE_FIGURE, COMMA, RIGHTPARENT, LEFTPARENT, CONDITIONAL, START_SIMULATION, END, SCENE, VALUE_STATIC;
+terminal Float REAL;
+terminal String ALPHABETIC;
+
+non terminal program;
+non terminal Object expr, deriv;
+
+program					::= BEGIN ID body_program END ;
+
+body_declaration		::= LEFTBRACKET static_declaration RIGHTBRACKET
+							| LEFTBRACKET dynamic_declaration RIGHTBRACKET 
+							;
+
+static_declaration		::= STATIC_OBJECT attribute_declaration EQUAL value_static SEMICOLON
+							| static_declaration
+							| 
+							;
+
+dynamic_declaration		::= DYNAMIC_OBJECT attribute_declaration EQUAL value_dynamic SEMICOLON
+							| dynamic_declaration
+							|
+							;
+
+body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
+
+body_program 			::= DECLARATION body_declaration ACTION body_action ;
+
+attribute_declaration 	::= TYPE_FIGURE ID ; 
+
+value_static 			::= position 
+							| rotation
+							| scale
+							;
+
+value_dynamic 			::= position 
+							| rotation
+							| scale
+							| weight
+							| speed
+							;
+
