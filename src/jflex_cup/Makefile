@@ -4,7 +4,7 @@ JC 		= javac
 JAVA 	= java
 
 all: jflex cup java
-	$(JAVA) parser ../ejemplo.txt
+	$(JAVA) Main ../ejemplo.txt
 
 java:
 	$(JC) *.java
@@ -18,4 +18,5 @@ cup:
 clean:
 	$(RM) *~
 	$(RM) *.class
-	$(RM) *.java
+	$(RM) analex.java
+	$(RM) parser.java

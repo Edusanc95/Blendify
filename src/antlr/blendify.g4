@@ -1,11 +1,12 @@
 // Define a grammar called blendify
 grammar blendify;
 program					: BEGIN id body_program END ;
-body_declaration 		: '{' static_declaration '}' | '{' dynamic_declaration '}' ;
-static_declaration		: STATIC attribute_declaration '=' value_static ';' 
-                          static_declaration | ;
-dynamic_declaration		: DYNAMIC attribute_declaration '=' value_dynamic ';' 
-                          dynamic_declaration | ;
+body_declaration 		: '{' static_declaration '}' static_dynamic | 
+							'{' dynamic_declaration static_dynamic '}' ;
+static_declaration		: STATIC attribute_declaration '=' value_static ';' ;
+dynamic_declaration		: DYNAMIC attribute_declaration '=' value_dynamic ';' ;
+static_dynamic			: static_declaration static_dynamic | dynamic_declaration
+							static_dynamic | ;	
 body_action         	: '{' START_SIMULATION ';' '}' ;
 body_program            : DECLARATION body_declaration ACTION body_action ;
 attribute_declaration   : type_figure id ;

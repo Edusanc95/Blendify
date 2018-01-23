@@ -1,75 +1,73 @@
+/* -------------------------- user section ------------------------*/
 import java_cup.runtime.Symbol;
-import java.util.*;
 
-class Utility {
+%%
 
-    public static final Hashtable<String, Integer> keyWords =
-	new Hashtable<String, Integer>() {{
-	    put("begin", sym.BEGIN); 
-	    put("end", sym.END);
-	    put("declaration", sym.DECLARATION);
-	    put("action", sym.ACTION);
-	    put("static", sym.STATIC_OBJECT);
-	    put("dynamic", sym.DYNAMIC_OBJECT);
-	    put("position", sym.VALUE_STATIC);
-	    put("scale", sym.VALUE_STATIC);
-	    put("rotation", sym.VALUE_STATIC);
-	    put("weight", sym.VALUE_DYNAMIC);
-	    put("speed", sym.VALUE_DYNAMIC);
-	    put("Cube", sym.TYPE_FIGURE);
-	    put("Sphere" , sym.TYPE_FIGURE);
-	    put("Cone" , sym.TYPE_FIGURE);
-	    put("Cylinder" , sym.TYPE_FIGURE);
-	    put("Force_field" , sym.TYPE_FIGURE);
-	    put("Ramp" , sym.TYPE_FIGURE);
-	    put("Plane" , sym.TYPE_FIGURE);
-	}};
+/* ----------------- declaration and option section -----------------*/
+
+%standalone
+%class analex
+%line
+%column
+%cup
+%state COMMENT
+
+%{
+
+static utility utility = new utility();
+
+private Symbol symbol(int type) {
+   return new Symbol(type,yyline,yycolumn);
 }
 
-%%
-%standalone
-%cup
-%class analex
-%state COMMENT
+private Symbol symbol(int type,Object value){ 
+	return new Symbol(type,yyline,yycolumn,value); 
+} 
+
+
+%}
+
 %%
 
-/* ---------- Rules and Actions ---------------*/
-<YYINITIAL> {
+/* ---------- rules and actions ---------------*/
+<YYINITIAL> {										/* begin YYINITIAL */
 "/*"												{yybegin(COMMENT);}
 "*/"												{ /*ERROR*/ }
-"begin"												{return new Symbol(sym.BEGIN);}
-"end"												{return new Symbol(sym.END);}
-"declaration"										{return new Symbol(sym.DECLARATION);}
-"action"											{return new Symbol(sym.ACTION);}
-"static"											{return new Symbol(sym.STATIC_OBJECT);}
-"dynamic"											{return new Symbol(sym.DYNAMIC_OBJECT);}
-"{"													{return new Symbol(sym.LEFTBRACKET);}
-"}"													{return new Symbol(sym.RIGHTBRACKET);}
-"="													{return new Symbol(sym.EQUAL);}
-";"													{return new Symbol(sym.SEMICOLON);}
-"start_simulation"									{return new Symbol(sym.START_SIMULATION);}
-"position" 											{return new Symbol(sym.VALUE_STATIC);}
-"rotation" 											{return new Symbol(sym.VALUE_STATIC);}
-"scale"												{return new Symbol(sym.VALUE_STATIC);}
-"weight" 											{return new Symbol(sym.VALUE_DYNAMIC);}
-"speed"												{return new Symbol(sym.VALUE_DYNAMIC);}
-"Cube" 												{return new Symbol(sym.TYPE_FIGURE);}
-"Sphere" 											{return new Symbol(sym.TYPE_FIGURE);}
-"Cone" 												{return new Symbol(sym.TYPE_FIGURE);}
-"Cylinder"											{return new Symbol(sym.TYPE_FIGURE);}
-"Force_field"										{return new Symbol(sym.TYPE_FIGURE);}
-"Ramp"												{return new Symbol(sym.TYPE_FIGURE);}
-"Plane"												{return new Symbol(sym.TYPE_FIGURE);}
-","													{return new Symbol(sym.COMMA);}
-")"													{return new Symbol(sym.RIGHTPARENT);}
-"("													{return new Symbol(sym.LEFTPARENT);}
--?(([0-9]+)|([0-9]*\.[0-9]+))						{return new Symbol(sym.REAL);}
+"begin"												{return symbol(sym.BEGIN);}
+"end"												{return symbol(sym.END);}
+"declaration"										{return symbol(sym.DECLARATION);}
+"action"											{return symbol(sym.ACTION);}
+"static"											{return symbol(sym.STATIC_OBJECT);}
+"dynamic"											{return symbol(sym.DYNAMIC_OBJECT);}
+"{"													{return symbol(sym.LEFTBRACKET);}
+"}"													{return symbol(sym.RIGHTBRACKET);}
+"="													{return symbol(sym.EQUAL);}
+";"													{return symbol(sym.SEMICOLON);}
+"start_simulation"									{return symbol(sym.START_SIMULATION);}
+"position" 											{return symbol(sym.VALUE_STATIC);}
+"rotation" 											{return symbol(sym.VALUE_STATIC);}
+"scale"												{return symbol(sym.VALUE_STATIC);}
+"weight" 											{return symbol(sym.VALUE_DYNAMIC);}
+"speed"												{return symbol(sym.VALUE_DYNAMIC);}
+"Cube" 												{return symbol(sym.TYPE_FIGURE);}
+"Sphere" 											{return symbol(sym.TYPE_FIGURE);}
+"Cone" 												{return symbol(sym.TYPE_FIGURE);}
+"Cylinder"											{return symbol(sym.TYPE_FIGURE);}
+"Force_field"										{return symbol(sym.TYPE_FIGURE);}
+"Ramp"												{return symbol(sym.TYPE_FIGURE);}
+"Plane"												{return symbol(sym.TYPE_FIGURE);}
+","													{return symbol(sym.COMMA);}
+")"													{return symbol(sym.RIGHTPARENT);}
+"("													{return symbol(sym.LEFTPARENT);}
+-?(([0-9]+)|([0-9]*\.[0-9]+))						{return symbol(sym.REAL, new Float(yytext()));}
 [a-z]+[a-zA-Z0-9_]* 								{String token = yytext();
-													if(Utility.keyWords.containsKey(token))
-														return new Symbol(Utility.keyWords.get(token));
+													if(utility.keyWord.containsKey(token))
+														return symbol(utility.keyWord.get(token), new String(yytext()));
 													else
-														return new Symbol(sym.ID);}
-[ \t\n\r\f]	  										{ /* ignora delimitadores */ }
+														return symbol(sym.ID, new String(yytext()));}
+[ \t\n\r\f]	  										{ /* ignore spaces */ }
+.													{System.err.println("Ilegal character: " + "\'" + yytext() + "\' "
+													 + " line: " + (yyline + 1) + " and column: " + (yycolumn + 1));}
 }													/* end YYINITIAL */
 
 <COMMENT> 											{
