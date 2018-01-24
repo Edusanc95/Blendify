@@ -20,7 +20,6 @@ scale 					: SCALE coordinates ';' ;
 weight 					: WEIGHT real ';' ;
 speed 					: SPEED coordinates ';' ;
 coordinates 			: '(' real ',' real ',' real ')' ;
-condition				: AND | OR ;
 real 					: DIGIT | DIGIT '.' DIGIT ;
 
 // Define Tokens
@@ -44,8 +43,6 @@ ROTATION 				: 'rotation' ;
 SCALE 					: 'scale' ;
 WEIGHT 					: 'weight' ;
 SPEED 					: 'speed' ;
-AND 					: 'AND' ;
-OR						: 'OR';
 DIGIT					: '-'?[0-9]+ ;
 ID 						: [a-z]+[a-zA-Z0-9_]* ;
 WS       			    : [ \t\r\n]+ -> skip ; 		// skip spaces, tabs, newlines

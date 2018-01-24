@@ -44,11 +44,11 @@ private Symbol symbol(int type,Object value){
 "="													{return symbol(sym.EQUAL);}
 ";"													{return symbol(sym.SEMICOLON);}
 "start_simulation"									{return symbol(sym.START_SIMULATION);}
-"location" 											{return symbol(sym.VALUE_STATIC);}
-"rotation" 											{return symbol(sym.VALUE_STATIC);}
-"scale"												{return symbol(sym.VALUE_STATIC);}
-"weight" 											{return symbol(sym.VALUE_DYNAMIC);}
-"speed"												{return symbol(sym.VALUE_DYNAMIC);}
+"location" 											{return symbol(sym.LOCATION);}
+"rotation" 											{return symbol(sym.ROTATION);}
+"scale"												{return symbol(sym.SCALE);}
+"weight" 											{return symbol(sym.WEIGHT);}
+"speed"												{return symbol(sym.SPEED);}
 "Cube" 												{return symbol(sym.TYPE_FIGURE);}
 "Sphere" 											{return symbol(sym.TYPE_FIGURE);}
 "Cone" 												{return symbol(sym.TYPE_FIGURE);}

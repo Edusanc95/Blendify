@@ -21,7 +21,7 @@ terminal String ID;
 non terminal program;
 non terminal Object body_declaration, static_declaration, dynamic_declaration;
 non terminal Object body_action, body_program, attribute_declaration, value_static;
-non terminal Object value_dynamic, coordinates, value_object, static_dynamic;
+non terminal Object value_dynamic, coordinates, value_object, static_dynamic, figure_declaration;
 
 start with program;
 
@@ -36,20 +36,32 @@ static_dynamic 			::= static_declaration static_dynamic
 							|
 							;
 
-static_declaration		::= STATIC_OBJECT attribute_declaration EQUAL value_static SEMICOLON ;
+static_declaration		::= STATIC_OBJECT figure_declaration LEFTBRACKET attribute_declaration RIGHTBRACKET ;
 
-value_object 			::= VALUE_STATIC | VALUE_DYNAMIC ;
-
-dynamic_declaration		::= DYNAMIC_OBJECT attribute_declaration EQUAL value_dynamic SEMICOLON ;
+dynamic_declaration		::= DYNAMIC_OBJECT figure_declaration LEFTBRACKET value_object RIGHTBRACKET ;
 
 body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
 
 body_program 			::= DECLARATION body_declaration ACTION body_action ;
 
-attribute_declaration 	::= TYPE_FIGURE ID ;
+figure_declaration 		::= TYPE_FIGURE ID ;
 
-value_static 			::= VALUE_STATIC coordinates ;
+attribute_declaration 	::= value_static attribute_declaration | ;
 
-value_dynamic 			::= value_object coordinates ;
+value_object 			::= value_static value_object | value_dynamic value_object | ;
+
+value_static 			::= location | rotation | scale ;
+
+value_dynamic 			::= weight | speed ;
+
+location 				::= LOCATION coordinates SEMICOLON ;
+
+rotation 				::= ROTATION coordinates SEMICOLON ;
+
+scale 					::= SCALE coordinates SEMICOLON ;
+
+weight 					::= WEIGHT real SEMICOLON ;
+
+speed 					::= SPEED coordinates SEMICOLON ;
 
 coordinates 			::= LEFTPARENT REAL COMMA REAL COMMA REAL RIGHTPARENT ;
