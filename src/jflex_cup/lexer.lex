@@ -41,7 +41,6 @@ private Symbol symbol(int type,Object value){
 "dynamic"											{return symbol(sym.DYNAMIC_OBJECT);}
 "{"													{return symbol(sym.LEFTBRACKET);}
 "}"													{return symbol(sym.RIGHTBRACKET);}
-"="													{return symbol(sym.EQUAL);}
 ";"													{return symbol(sym.SEMICOLON);}
 "start_simulation"									{return symbol(sym.START_SIMULATION);}
 "location" 											{return symbol(sym.LOCATION);}

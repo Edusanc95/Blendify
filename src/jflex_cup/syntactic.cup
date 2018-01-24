@@ -12,15 +12,15 @@ parser code {:
 	}
 :}
 
-terminal STATIC_OBJECT, DYNAMIC_OBJECT, LEFTBRACKET, RIGHTBRACKET, EQUAL;
-terminal SEMICOLON, BEGIN, ACTION, VALUE_DYNAMIC, TYPE_FIGURE, DECLARATION;
-terminal COMMA, RIGHTPARENT, LEFTPARENT, START_SIMULATION, END, VALUE_STATIC;
+terminal STATIC_OBJECT, DYNAMIC_OBJECT, LEFTBRACKET, RIGHTBRACKET, LOCATION, SCALE;
+terminal SEMICOLON, BEGIN, ACTION, TYPE_FIGURE, DECLARATION, SPEED, WEIGHT;
+terminal COMMA, RIGHTPARENT, LEFTPARENT, START_SIMULATION, END, ROTATION;
 terminal Float REAL;
 terminal String ID;
 
 non terminal program;
-non terminal Object body_declaration, static_declaration, dynamic_declaration;
-non terminal Object body_action, body_program, attribute_declaration, value_static;
+non terminal Object body_declaration, static_declaration, dynamic_declaration, location, scale, weight;
+non terminal Object body_action, body_program, attribute_declaration, value_static, rotation, speed;
 non terminal Object value_dynamic, coordinates, value_object, static_dynamic, figure_declaration;
 
 start with program;
@@ -48,19 +48,27 @@ figure_declaration 		::= TYPE_FIGURE ID ;
 
 attribute_declaration 	::= value_static attribute_declaration | ;
 
-value_object 			::= value_static value_object | value_dynamic value_object | ;
+value_object 			::= value_static value_object 
+							| value_dynamic value_object 
+							| 
+							;
 
-value_static 			::= location | rotation | scale ;
+value_static 			::= location
+							| rotation 
+							| scale 
+							;
 
-value_dynamic 			::= weight | speed ;
+value_dynamic 			::= weight 
+							| speed 
+							;
 
-location 				::= LOCATION coordinates SEMICOLON ;
+location				::= LOCATION coordinates SEMICOLON ;
 
-rotation 				::= ROTATION coordinates SEMICOLON ;
+rotation				::= ROTATION coordinates SEMICOLON ;
 
 scale 					::= SCALE coordinates SEMICOLON ;
 
-weight 					::= WEIGHT real SEMICOLON ;
+weight 					::= WEIGHT REAL SEMICOLON ;
 
 speed 					::= SPEED coordinates SEMICOLON ;
 
