@@ -1,7 +1,16 @@
 import java_cup.runtime.*;
 import java.io.*;
+import org.stringtemplate.v4.*;
 
 /* ---------------------- user component section --------------------*/
+action code {:
+	ST template = new ST("\n" +
+								"import bpy\n" +
+								"origin = (<origin_x>, <origin_y>, <origin_z>)\n" +
+								"bpy.ops.mesh.primitive_uv_<name>_add(location=origin)\n" +
+								"");
+:}
+
 parser code {:
 	public void syntax_error(Symbol s) {
   		report_error("Syntax error in line " + s.left + " and column " + s.right, null);
@@ -19,13 +28,14 @@ terminal Float REAL;
 terminal String ID;
 
 non terminal program;
-non terminal Object body_declaration, static_declaration, dynamic_declaration, location, scale, weight;
-non terminal Object body_action, body_program, attribute_declaration, value_static, rotation, speed;
-non terminal Object value_dynamic, coordinates, value_object, static_dynamic, figure_declaration;
+non terminal body_declaration, static_declaration, dynamic_declaration, location, scale, weight;
+non terminal body_action, body_program, attribute_declaration, value_static, rotation, speed;
+non terminal value_dynamic, coordinates, value_object, static_dynamic, figure_declaration;
 
 start with program;
 
-program					::= BEGIN ID body_program END ;
+program					::= BEGIN ID body_program END
+							{: System.out.println(template.render()); :} ;
 
 body_declaration		::= LEFTBRACKET static_declaration static_dynamic RIGHTBRACKET
 							| LEFTBRACKET dynamic_declaration static_dynamic RIGHTBRACKET 
@@ -44,7 +54,8 @@ body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
 
 body_program 			::= DECLARATION body_declaration ACTION body_action ;
 
-figure_declaration 		::= TYPE_FIGURE ID ;
+figure_declaration 		::= TYPE_FIGURE ID:id
+							{:  template.add("name", id); :} ;
 
 attribute_declaration 	::= value_static attribute_declaration | ;
 
@@ -72,4 +83,8 @@ weight 					::= WEIGHT REAL SEMICOLON ;
 
 speed 					::= SPEED coordinates SEMICOLON ;
 
-coordinates 			::= LEFTPARENT REAL COMMA REAL COMMA REAL RIGHTPARENT ;
+coordinates 			::= LEFTPARENT REAL:r1 COMMA REAL:r2 COMMA REAL:r3 RIGHTPARENT
+							{:  template.add("origin_x", r1);
+								template.add("origin_y", r2);
+								template.add("origin_z", r3);
+							:} ;
