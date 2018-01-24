@@ -44,7 +44,7 @@ private Symbol symbol(int type,Object value){
 "="													{return symbol(sym.EQUAL);}
 ";"													{return symbol(sym.SEMICOLON);}
 "start_simulation"									{return symbol(sym.START_SIMULATION);}
-"position" 											{return symbol(sym.VALUE_STATIC);}
+"location" 											{return symbol(sym.VALUE_STATIC);}
 "rotation" 											{return symbol(sym.VALUE_STATIC);}
 "scale"												{return symbol(sym.VALUE_STATIC);}
 "weight" 											{return symbol(sym.VALUE_DYNAMIC);}
