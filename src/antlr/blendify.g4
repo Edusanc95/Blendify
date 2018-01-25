@@ -1,13 +1,15 @@
 // Define a grammar called blendify
 grammar blendify;
-program					: BEGIN id body_program END ;
+program	locals [ST template = (new STGroupFile("../template.blendify.stg")).getInstanceOf("figure");]
+	: BEGIN id body_program END {System.out.println($template.render());};
+
 body_declaration 		: '{' static_dynamic '}' ;
 static_declaration		: STATIC figure_declaration '{' attribute_declaration '}' ;
 dynamic_declaration		: DYNAMIC figure_declaration '{' value '}' ;
 static_dynamic			: static_declaration static_dynamic | dynamic_declaration static_dynamic | ;	
 body_action         	: '{' START_SIMULATION ';' '}' ;
 body_program            : DECLARATION body_declaration ACTION body_action ;
-figure_declaration   	: type_figure id ;
+figure_declaration   	: type_figure id {$program::template.add("name", $id.text);};
 attribute_declaration   : value_static attribute_declaration | ;
 type_figure             : CUBE | SPHERE | CONE | CYLINDER | FORCE_FIELD | RAMP | PLANE ;
 value_static            : location | rotation | scale ;
@@ -19,7 +21,11 @@ rotation 				: ROTATION coordinates ';' ;
 scale 					: SCALE coordinates ';' ;
 weight 					: WEIGHT real ';' ;
 speed 					: SPEED coordinates ';' ;
-coordinates 			: '(' real ',' real ',' real ')' ;
+coordinates 			: '(' r1=real ',' r2=real ',' r3=real ')' {
+				  $program::template.add("origin_x", $r1.text);
+				  $program::template.add("origin_y", $r2.text);
+				  $program::template.add("origin_z", $r3.text);
+				   };
 real 					: DIGIT | DIGIT '.' DIGIT ;
 
 // Define Tokens
