@@ -1,6 +1,9 @@
 // Define a grammar called blendify
 grammar blendify;
-program	locals [ST template = (new STGroupFile("../template.blendify.stg")).getInstanceOf("figure");]
+@header {
+    import org.stringtemplate.v4.*;
+}
+program	locals [ST template = (new STGroupFile("../template/blendify.stg")).getInstanceOf("figure");]
 	: BEGIN id body_program END {System.out.println($template.render());};
 
 body_declaration 		: '{' static_dynamic '}' ;
