@@ -1,14 +1,11 @@
+import org.stringtemplate.v4.*;
 import java_cup.runtime.*;
 import java.io.*;
-import org.stringtemplate.v4.*;
 
 /* ---------------------- user component section --------------------*/
 action code {:
-	ST template = new ST("\n" +
-								"import bpy\n" +
-								"origin = (<origin_x>, <origin_y>, <origin_z>)\n" +
-								"bpy.ops.mesh.primitive_uv_<name>_add(location=origin)\n" +
-								"");
+	STGroup stGroup = new STGroupFile("../template/blendify.stg");
+	ST template = stGroup.getInstanceOf("figure");
 :}
 
 parser code {:
@@ -27,9 +24,8 @@ terminal COMMA, RIGHTPARENT, LEFTPARENT, START_SIMULATION, END, ROTATION;
 terminal Float REAL;
 terminal String ID;
 
-non terminal program;
-non terminal body_declaration, static_declaration, dynamic_declaration, location, scale, weight;
-non terminal body_action, body_program, attribute_declaration, value_static, rotation, speed;
+non terminal program, body_declaration, static_declaration, dynamic_declaration, location, scale;
+non terminal body_action, body_program, attribute_declaration, value_static, rotation, speed, weight;
 non terminal value_dynamic, coordinates, value_object, static_dynamic, figure_declaration;
 
 start with program;
