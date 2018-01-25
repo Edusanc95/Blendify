@@ -1,0 +1,6 @@
+figure(name, origin_x, origin_y, origin_z) ::=
+<<
+import bpy
+origin = (<origin_x>, <origin_y>, <origin_z>)
+bpy.ops.mesh.primitive_uv_<name>_add(location=origin)
+>>

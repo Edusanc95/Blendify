@@ -1,0 +1,86 @@
+import org.stringtemplate.v4.*;
+import java_cup.runtime.*;
+import java.io.*;
+
+/* ---------------------- user component section --------------------*/
+action code {:
+	STGroup stGroup = new STGroupFile("../template/blendify.stg");
+	ST template = stGroup.getInstanceOf("figure");
+:}
+
+parser code {:
+	public void syntax_error(Symbol s) {
+  		report_error("Syntax error in line " + s.left + " and column " + s.right, null);
+	}
+
+	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+  		report_fatal_error("", null);
+	}
+:}
+
+terminal STATIC_OBJECT, DYNAMIC_OBJECT, LEFTBRACKET, RIGHTBRACKET, LOCATION, SCALE;
+terminal SEMICOLON, BEGIN, ACTION, TYPE_FIGURE, DECLARATION, SPEED, WEIGHT;
+terminal COMMA, RIGHTPARENT, LEFTPARENT, START_SIMULATION, END, ROTATION;
+terminal Float REAL;
+terminal String ID;
+
+non terminal program, body_declaration, static_declaration, dynamic_declaration, location, scale;
+non terminal body_action, body_program, attribute_declaration, value_static, rotation, speed, weight;
+non terminal value_dynamic, coordinates, value_object, static_dynamic, figure_declaration;
+
+start with program;
+
+program					::= BEGIN ID body_program END
+							{: System.out.println(template.render()); :} ;
+
+body_declaration		::= LEFTBRACKET static_declaration static_dynamic RIGHTBRACKET
+							| LEFTBRACKET dynamic_declaration static_dynamic RIGHTBRACKET 
+							;
+
+static_dynamic 			::= static_declaration static_dynamic
+							| dynamic_declaration static_dynamic
+							|
+							;
+
+static_declaration		::= STATIC_OBJECT figure_declaration LEFTBRACKET attribute_declaration RIGHTBRACKET ;
+
+dynamic_declaration		::= DYNAMIC_OBJECT figure_declaration LEFTBRACKET value_object RIGHTBRACKET ;
+
+body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
+
+body_program 			::= DECLARATION body_declaration ACTION body_action ;
+
+figure_declaration 		::= TYPE_FIGURE ID:id
+							{:  template.add("name", id); :} ;
+
+attribute_declaration 	::= value_static attribute_declaration | ;
+
+value_object 			::= value_static value_object 
+							| value_dynamic value_object 
+							| 
+							;
+
+value_static 			::= location
+							| rotation 
+							| scale 
+							;
+
+value_dynamic 			::= weight 
+							| speed 
+							;
+
+location				::= LOCATION coordinates SEMICOLON ;
+
+rotation				::= ROTATION coordinates SEMICOLON ;
+
+scale 					::= SCALE coordinates SEMICOLON ;
+
+weight 					::= WEIGHT REAL SEMICOLON ;
+
+speed 					::= SPEED coordinates SEMICOLON ;
+
+coordinates 			::= LEFTPARENT REAL:r1 COMMA REAL:r2 COMMA REAL:r3 RIGHTPARENT
+							{:  template.add("origin_x", r1);
+								template.add("origin_y", r2);
+								template.add("origin_z", r3);
+							:} ;
