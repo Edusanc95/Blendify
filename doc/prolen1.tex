@@ -92,20 +92,17 @@ En esta sección se muestra la tabla de \textit{tokens} y palabras reservadas qu
 \begin{table}
 \centering
 \begin{tabular}{| c | c | c |} \hline
-\textbf{Tokens}   			& \textbf{Lexeme} 										&  \textbf{Pattern} 		\\\hline
-Assign            			& =     												& =        					\\\hline
-Comma             			& ,       												& ,        					\\\hline
-Open Bracket      			& \{       												& \{        				\\\hline
-Closed Bracket    			& \}       												& \}       					\\\hline
-condition         			& AND \textbar OR       								& AND \textbar OR        	\\\hline
-Open parenthesis  			& (       												& (        					\\\hline
-Closed parenthesis			& )       												& )        					\\\hline
+\textbf{Tokens}   			& \textbf{Lexeme} 										&  \textbf{Pattern} 					\\\hline
+Comma             			& ,       												& ,        								\\\hline
+Open Bracket      			& \{       												& \{        							\\\hline
+Closed Bracket    			& \}       												& \}       								\\\hline
+Open parenthesis  			& (       												& (        								\\\hline
+Closed parenthesis			& )       												& )        								\\\hline
 Coordinates       			& (1.2, 1.2, 1.2)       								& '(' real ',' real ',' real ')'       	\\\hline
-Alphabetic        			& a ,..., z , A ,..., Z       							& lower\_case \textbar  upper\_case      \\\hline
-lower\_case       			& a ,..., z       										& [a-z] 					\\\hline
-upper\_case       			& A ,..., Z       										& [A-Z] 					\\\hline
-Real              			& 23.21       											& digit + [('.' digit + )]  \\\hline
-Digit             			& 0 ,..., 9       										& \makecell{1 \textbar 2 \textbar 3 \textbar 4 \textbar 5 \\ 6 \textbar 7 \textbar 8 \textbar 9 \textbar 0}        												\\\hline
+Semicolon       			& ;       												& ;		 								\\\hline
+Real              			& 23.21       											& -?(([0-9]+)|([0-9]*.[0-9]+))  		\\\hline
+ID             				& variableV1       										& [a-z]+[a-zA-Z0-9\_]* 					\\\hline
+
 \end{tabular}
 \caption{\label{tab:Tokens}Tabla de tokens.}
 \end{table}
@@ -117,11 +114,15 @@ Digit             			& 0 ,..., 9       										& \makecell{1 \textbar 2 \textb
 begin            			& begin     														& begin        				\\\hline
 end             			& end      															& end        			    \\\hline
 declaration           		& declaration       												& declaration        		\\\hline
-scene           			& scene       														& scene       			  	\\\hline
 action           			& action       														& action       			  	\\\hline
 start\_simulation 			& start\_simulation       											& start\_simulation        	\\\hline
-type figure       			& static, dynamic       											& static, dynamic        	\\\hline
-type value        			& \makecell{position, rotation, scale \\ weight, speed}				& \makecell{position \textbar rotation \textbar scale \\\textbar weight \textbar speed}        \\\hline
+static						& static 															& static 					\\\hline
+dynamic 					& dynamic 															& dynamic 					\\\hline
+speed 						& speed 															& speed 					\\\hline
+weight 						& weight 															& weight 					\\\hline
+scale 						& scale 															& scale 					\\\hline
+rotation					& rotation 															& rotation					\\\hline
+location 					& location 															& location					\\\hline
 form figure       			& \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, Ramp}     & \makecell{Cube \textbar Sphere \textbar Cone \\ Cylinder \textbar Force\_field \textbar Ramp}        														  \\\hline
 \end{tabular}
 \caption{\label{tab:KeyWords}Tabla de palabras reservadas.}
@@ -130,49 +131,44 @@ form figure       			& \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, R
 \subsection{EBNF}
 
 Una vez tenemos definidos nuestros \textit{tokens} y palabras reservadas, podemos comenzar a especificar nuestro lenguaje. Como producción de partida se ha pensado en una que contenga terminales simples para que el usuario (normalmente destinado a aquellos que no tiene mucha experiencia en el campo de la programación) no tenga dificultades a la hora de crear diferentes escenarios, ya que la herramienta está pensada para ayudar en el campo de la física. La producción sería la siguiente: \\ \\
-\noindent \textit{program} ::= \textbf{begin} id\_program body\_program \textbf{end}.
+\noindent \textit{program} ::= \textbf{begin} id body\_program \textbf{end}.
 
 Se pretende que el usuario define el comienzo y el fin del programa para ayudarle a no cometer errores que puedan entorpecer el desarrollo del mismo.
 
-\noindent \textit{body\_program} ::= \textbf{declaration} body\_declaration \textbf{scene} body\_scene \textbf{action} body\_action.
+\noindent \textit{body\_program} ::= \textbf{declaration} body\_declaration \textbf{action} body\_action.
 
 Como se ha mencionado anteriormente, el objetivo de esta producción sería el mismo, ya que hay una parte de declaración de variables, otra de escenarios y acciones.
 
-\noindent\textit{body\_declaration} ::= '\{' \{ \textbf{(static} attribute\_declaration '=' value\_static) \textbar (\textbf{dynamic} attribute\_declaration '=' value\_dynamic)\}  '\}'.
+\noindent \textit{body\_declaration} ::= ['\{' static\_declaration static\_dynamic '\}'] ['\{' dynamic\_declaration static\_dynamic '\}'].  \\ \\
+Esta producción definine los campos de declaraciones. Básicamente, lo que haremos será definir un tipo, el cual irá asociado a un identificador. Por ejemplo, en el caso de 'body\_declration' definiremos si las variables son estáticas (objetos que tendrán posición, rotación y escala) o dinámicas (objetos que tendrán velocidad y peso, además de las mencionadas anteriormente), además de especificar su tipo e identificador.
 
-\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} '\}'.
+\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} ';' '\}'. \\ \\
+En 'body\_action' podremos ejecutar una serie de acciones que modifiquen los objetos de nuestra escena. Para esta versión la única acción que tendrá será la de iniciar la simulación.
 
-\noindent \textit{body\_scene} ::= '\{' \{(attribute\_case '=' goal)\} '\}'.
+\noindent \textit{static\_declaration} ::= static\_object figure\_declaration '\{' attribute\_declaration '\}'.
 
-Estas tres producciones defininen los campos de declaraciones, acciones y escenearios. Básicamente, lo que haremos en estos apartados será definir un tipo, el cual irá aosciado a un identificador. Por ejemplo, en el caso de \textit{body\_declaration} definiremos si las variables son estáticas (objetos que tendrán posición, rotación y escala) o dinámicas (objetos que tendrán velocidad y peso, además de las mencionadas anteriormente), además de especificar su tipo e identificador. En el caso de \textit{body\_scene} sería lo mismo obviando \textbf{static} y \textbf{dynamic}.
-
-\noindent \textit{attribute\_declaration} ::= type\_figure id\_attribute.
+\noindent \textit{dynamic\_declaration} ::= dynamic\_object figure\_declaration '\{' value\_object '\}'. \\ \\
+Estas dos ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: Cube, Sphere, Cone, Cylinder, Force\_field, Ramp y Plane. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
 
 \noindent \textit{type\_figure} ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}.
 
 Estas tres ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: \textbf{Cube}, \textbf{Sphere}, \textbf{Cone}, \textbf{Cylinder}, \textbf{Force\_field}, \textbf{Ramp}, \textbf{Plane}. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
 
-\noindent \textit{attribute\_case} := \textbf{Case} id\_case.
+\noindent \textit{figure\_declaration} ::= type\_figure id.
 
-Aunque se ha mencionado anteriormente, \textit{attribute\_case} define el tipo del escenario que va a ser creado.  \textbf{Case} es una palabra reservada que hace mención al tipo de variable escenario. \textit{id\_case} concreta el nombre que tendrá un escenario en concreto. La formación de \textit{id\_case} será el mismo que \textit{id\_attribute}.
+\noindent \textit{attribute\_declaration} ::= [value\_static] [attribute\_declaration].
 
-\noindent \textit{goal}::=  gplane \textbar gspeed \textbar gcollision \textbar goal2.
-
-\noindent \textit{goal2} ::= '(' goal \{ condition goal \} ')'.
-
-\textit{goal} y \textit{goal2} nos permitirán crear condiciones a la hora de crear escenearios. Con estas producciones podremos definir una o diferentes metas que ayudarán al usuario a tener diferentes punto de vista de su problema.
+\noindent \textit{value\_object} ::= [value\_static] \{value\_object\}.
 
 \noindent \textit{value\_static} ::= [position] [rotation] [scale].
 
-\noindent \textit{value\_dynamic} ::= [position] [rotation] [scale] [weight] [speed].
+\noindent \textit{value\_dynamic} ::= [weight] [speed].
 
 \textit{value\_static} y \textit{value\_dynamic} serán aquellas producciones que permitan definir si un objeto será estático, es decir, no podrá moverse, o dinámico, tendrá una velocidad y peso asociados.
 
-\noindent \textit{id\_attribute} ::= alphabetic \{alphanumeric\}.
+\noindent \textit{id} ::= [a-z]+[a-zA-Z0-9\_]*.
 
-\noindent \textit{id\_program} ::= alphabetic \{alphanumeric\}.
-
-\noindent \textit{position} ::= \textbf{position} coordinates.
+\noindent \textit{location} ::= \textbf{location} coordinates.
 
 \noindent \textit{rotation} ::= \textbf{rotation} coordinates.
 
@@ -184,25 +180,9 @@ Aunque se ha mencionado anteriormente, \textit{attribute\_case} define el tipo d
 
 Con estas 5 producciones se intenta definir la posición, rotación, escala, peso y velocidad de un objeto en un escenario específico. Todas ellas se formarán mediante coordenadas (conjunto de 3 valores definidos por los ejes 'x', 'y', 'z' especificado en \textit{coordinates}) menos el peso, que será un número real.
 
-\noindent \textit{coordinates} ::= '(' real ',' real ','  real ')'.
+\noindent \textit{coordinates} ::= '(' real ',' real ',' real ')'.
 
-\noindent \textit{condition} ::= \textbf{AND} \textbar \textbf{OR}.
-
-\textit{condition} producción que contiene las condiciones lógicas \textbf{AND} y \textbf{OR}.
-
-\noindent \textit{alphabetic} ::= lower\_case  \textbar  upper\_case.
-
-\noindent \textit{lower\_case} ::= [a-z].
-
-\noindent \textit{upper\_case} ::=[A-Z].
-
-\textit{alphabetic} es aquella producción que genera letras minúsculas debido a \textit{lower\_case} y letras mayúsculas debido a \textit{upper\_case}.
-
-\noindent \textit{alphanumeric} ::= alphabetic \textbar digit.
-
-\textit{alphanumeric} será la producción que genere tanto letras, minúsculas o mayúsculas, como dígitos.
-
-\noindent \textit{real} ::= digit + [('.' digit + )].
+\noindent \textit{real} ::= -?(([0-9]+)|([0-9]*.[0-9]+)).
 
 Finalmente, \textit{real} será aquella producción que permita generar números reales.
 
