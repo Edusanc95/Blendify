@@ -2,9 +2,21 @@
 grammar blendify;
 @header {
     import org.stringtemplate.v4.*;
+    import java.io.PrintWriter;
+    import java.io.File;
 }
 program	locals [ST template = (new STGroupFile("../template/blendify.stg")).getInstanceOf("figure");]
-	: BEGIN id body_program END {System.out.println($template.render());};
+	: BEGIN id body_program END {
+	    try {
+		PrintWriter out = new PrintWriter("blendify_output.py");
+	    
+		out.println($template.render());
+		out.close();
+	    } catch (Exception e) {
+		System.out.println("Exception!!! " +
+				   e.getStackTrace());
+	    }};
+
 
 body_declaration 		: '{' static_dynamic '}' ;
 static_declaration		: STATIC figure_declaration '{' attribute_declaration '}' ;
