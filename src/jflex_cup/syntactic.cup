@@ -6,13 +6,27 @@ import java.io.*;
 action code {:
 	STGroup stGroup = new STGroupFile("../template/blendify.stg");
 	ST template = stGroup.getInstanceOf("figure");
+
+	/* Generates the python file according to the code of template */
+	public void generate_python_file(String file){
+		try {
+			PrintWriter out = new PrintWriter(file);
+			out.println(template.render());
+			out.close();
+	    } catch (Exception e) {
+			System.out.println("Exception!!! " + e.getStackTrace());
+	    }
+	    System.out.println(file + " generated");
+	}
 :}
 
 parser code {:
+	/* Reports a syntax error when some error occurs */
 	public void syntax_error(Symbol s) {
   		report_error("Syntax error in line " + s.left + " and column " + s.right, null);
 	}
 
+	/* Reports an error when the program cannot be recovered */
 	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
   		report_fatal_error("", null);
 	}
@@ -31,7 +45,7 @@ non terminal value_dynamic, coordinates, value_object, static_dynamic, figure_de
 start with program;
 
 program					::= BEGIN ID body_program END
-							{: System.out.println(template.render()); :} ;
+							{: generate_python_file("blendify_output.py"); :} ;
 
 body_declaration		::= LEFTBRACKET static_declaration static_dynamic RIGHTBRACKET
 							| LEFTBRACKET dynamic_declaration static_dynamic RIGHTBRACKET 

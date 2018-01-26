@@ -18,6 +18,7 @@ cup:
 clean:
 	$(RM) *~
 	$(RM) *.class
+	$(RM) *.py
 	$(RM) sym.java
 	$(RM) analex.java
 	$(RM) parser.java
