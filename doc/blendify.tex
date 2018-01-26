@@ -42,7 +42,7 @@
 \begin{titlepage}
 	\centering
     \vspace*{0.5 cm}
-    \includegraphics[scale = 0.15]{informatica.png}\\[1.0 cm]														% University Logo
+    \includegraphics[scale = 0.15]{informatica_gray.pdf}\\[1.5 cm]														% University Logo
     \textsc{\LARGE Universidad de Castilla-La Mancha\newline\newline Escuela Superior De Informática}\\[2.0 cm]		% University Name
 	\textsc{\Large Procesadores de Lenguajes}\\[0.5 cm]																	% Subject
 	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
@@ -98,9 +98,9 @@ Open Bracket      			& \{       												& \{        							\\\hline
 Closed Bracket    			& \}       												& \}       								\\\hline
 Open parenthesis  			& (       												& (        								\\\hline
 Closed parenthesis			& )       												& )        								\\\hline
-Coordinates       			& (1.2, 1.2, 1.2)       								& '(' real ',' real ',' real ')'       	\\\hline
+Coordinates       			& (1.2, 1.2, 1.2)       								& `(' real `,' real `,' real `)'       	\\\hline
 Semicolon       			& ;       												& ;		 								\\\hline
-Real              			& 23.21       											& -?(([0-9]+)|([0-9]*.[0-9]+))  		\\\hline
+Real              			& 23.21       											& -?(([0-9]+)|([0-9]*$\backslash$.[0-9]+))  		\\\hline
 ID             				& variableV1       										& [a-z]+[a-zA-Z0-9\_]* 					\\\hline
 
 \end{tabular}
@@ -139,26 +139,26 @@ Se pretende que el usuario define el comienzo y el fin del programa para ayudarl
 
 Como se ha mencionado anteriormente, el objetivo de esta producción sería el mismo, ya que hay una parte de declaración de variables, otra de escenarios y acciones.
 
-\noindent \textit{body\_declaration} ::= ['\{' static\_declaration static\_dynamic '\}'] ['\{' dynamic\_declaration static\_dynamic '\}'].  \\ \\
-Esta producción definine los campos de declaraciones. Básicamente, lo que haremos será definir un tipo, el cual irá asociado a un identificador. Por ejemplo, en el caso de 'body\_declration' definiremos si las variables son estáticas (objetos que tendrán posición, rotación y escala) o dinámicas (objetos que tendrán velocidad y peso, además de las mencionadas anteriormente), además de especificar su tipo e identificador.
+\noindent \textit{body\_declaration} ::= \textbf{`\{'} static\_declaration static\_dynamic \textbf{`\}'} \textbar\space \textbf{`\{'} dynamic\_declaration static\_dynamic \textbf{`\}'}.  \\ \\
+Esta producción definine los campos de declaraciones. Básicamente, lo que haremos será definir un tipo, el cual irá asociado a un identificador. Por ejemplo, en el caso de \textit{body\_declration} definiremos si las variables son estáticas (objetos que tendrán posición, rotación y escala) o dinámicas (objetos que tendrán velocidad y peso, además de las mencionadas anteriormente), además de especificar su tipo e identificador.
 
-\noindent \textit{body\_action} ::= '\{' \textbf{start\_simulation} ';' '\}'. \\ \\
-En 'body\_action' podremos ejecutar una serie de acciones que modifiquen los objetos de nuestra escena. Para esta versión la única acción que tendrá será la de iniciar la simulación.
+\noindent \textit{body\_action} ::= \textbf{`\{'} \textbf{start\_simulation} \textbf{`;'} \textbf{`\}'}. \\ \\
+En \textit{body\_action} podremos ejecutar una serie de acciones que modifiquen los objetos de nuestra escena. Para esta versión la única acción que tendrá será la de iniciar la simulación.
 
-\noindent \textit{static\_declaration} ::= static\_object figure\_declaration '\{' attribute\_declaration '\}'.
+\noindent \textit{static\_declaration} ::= static\_object figure\_declaration \textbf{`\{'} attribute\_declaration \textbf{`\}'}.
 
-\noindent \textit{dynamic\_declaration} ::= dynamic\_object figure\_declaration '\{' value\_object '\}'. \\ \\
+\noindent \textit{dynamic\_declaration} ::= dynamic\_object figure\_declaration \{ value\_object \}. \\ \\
 Estas dos ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: Cube, Sphere, Cone, Cylinder, Force\_field, Ramp y Plane. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
 
-\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar \textbf{Sphere} \textbar \textbf{Cone} \textbar \textbf{Cylinder} \textbar \textbf{Force\_field} \textbar \textbf{Ramp} \textbar  \textbf{Plane}.
+\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar\space \textbf{Sphere} \textbar\space \textbf{Cone} \textbar\space \textbf{Cylinder} \textbar\space \textbf{Force\_field} \textbar\space \textbf{Ramp} \textbar\space  \textbf{Plane}.
 
 Estas tres ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: \textbf{Cube}, \textbf{Sphere}, \textbf{Cone}, \textbf{Cylinder}, \textbf{Force\_field}, \textbf{Ramp}, \textbf{Plane}. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
 
 \noindent \textit{figure\_declaration} ::= type\_figure id.
 
-\noindent \textit{attribute\_declaration} ::= [value\_static] [attribute\_declaration].
+\noindent \textit{attribute\_declaration} ::= \{ value\_static \}.
 
-\noindent \textit{value\_object} ::= [value\_static] \{value\_object\}.
+\noindent \textit{value\_object} ::= \{ value\_static \} \textbar\space \{ value\_dynamic \}.
 
 \noindent \textit{value\_static} ::= [position] [rotation] [scale].
 
@@ -166,25 +166,19 @@ Estas tres ultimas producciones son aquellas que definen los tipos de figuras qu
 
 \textit{value\_static} y \textit{value\_dynamic} serán aquellas producciones que permitan definir si un objeto será estático, es decir, no podrá moverse, o dinámico, tendrá una velocidad y peso asociados.
 
-\noindent \textit{id} ::= [a-z]+[a-zA-Z0-9\_]*.
-
 \noindent \textit{location} ::= \textbf{location} coordinates.
 
 \noindent \textit{rotation} ::= \textbf{rotation} coordinates.
 
 \noindent \textit{scale} ::=  \textbf{scale} coordinates.
 
-\noindent \textit{weight} ::= \textbf{weight} real.
+\noindent \textit{weight} ::= \textbf{weight} real \textbf{`;'}.
 
 \noindent \textit{speed} ::= \textbf{speed} coordinates.
 
-Con estas 5 producciones se intenta definir la posición, rotación, escala, peso y velocidad de un objeto en un escenario específico. Todas ellas se formarán mediante coordenadas (conjunto de 3 valores definidos por los ejes 'x', 'y', 'z' especificado en \textit{coordinates}) menos el peso, que será un número real.
+Con estas 5 producciones se intenta definir la posición, rotación, escala, peso y velocidad de un objeto en un escenario específico. Todas ellas se formarán mediante coordenadas (conjunto de 3 valores definidos por los ejes `x', `y', `z' especificado en \textit{coordinates}) menos el peso, que será un número real.
 
-\noindent \textit{coordinates} ::= '(' real ',' real ',' real ')'.
-
-\noindent \textit{real} ::= -?(([0-9]+)|([0-9]*.[0-9]+)).
-
-Finalmente, \textit{real} será aquella producción que permita generar números reales.
+\noindent \textit{coordinates} ::= \textbf{`('} real \textbf{`,'} real \textbf{`,'} real \textbf{`)'}.
 
 \newpage
 \bibliographystyle{plain}
