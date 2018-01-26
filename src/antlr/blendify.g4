@@ -3,7 +3,6 @@ grammar blendify;
 @header {
     import org.stringtemplate.v4.*;
     import java.io.PrintWriter;
-    import java.io.File;
 }
 program	locals [ST template = (new STGroupFile("../template/blendify.stg")).getInstanceOf("figure");]
 	: BEGIN id body_program END {
