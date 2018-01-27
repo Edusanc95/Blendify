@@ -61,4 +61,5 @@ bpy.ops.transform.rotate(axis=(1.0, 2.0, 5.0))
 object1 = bpy.context.object
 object1.name = 'cube'
 ```
-Finally, we can get this code and copy it in the Blender console to create the objects that we have specified in our txt file.
+Finally, we can get this code and copy it in the Blender console to create the objects that we have specified in our txt file. The picture below shows both the objects generated and the python code in Blender.
+![Map](https://github.com/Edusanc95/Blendify/blob/master/images/test.png)
