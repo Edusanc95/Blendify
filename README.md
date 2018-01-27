@@ -48,6 +48,8 @@ Then, we must type the path of the txt file in the ``Makefile`` that is in the `
 of these folders and type the following command: ``make all``. If the txt file is written correctly, a python file will be
 generated. This is the python code that has been created.
 ```python
+import bpy
+
 origin_object2 = (1.0, 3.3, 6.0)
 bpy.ops.mesh.primitive_uv_sphere_add(location=origin_object2)
 object2 = bpy.context.object
