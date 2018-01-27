@@ -39,7 +39,7 @@ action code {:
 
 	/* Creates a template for each object */
 	public ST generateST(Type_figure type, Container container){
-		STGroup stGroup = new STGroupFile("../template/blendify.stg");
+		STGroup stGroup = new STGroupFile("../template/primitive_shape.stg");
 		ST template = stGroup.getInstanceOf("primitive_shape");
 		template.add("figure", type.getFigure());
 		template.add("name", type.getId());
@@ -184,6 +184,10 @@ body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
 
 body_program 			::= DECLARATION body_declaration:b ACTION body_action
 							{:
+								STGroup stGroup = new STGroupFile("../template/import.stg");
+								ST template = stGroup.getInstanceOf("import_sentence");
+								template.add("name", "bpy");
+								b.add(template);
 								RESULT = b;
 							:};
 
