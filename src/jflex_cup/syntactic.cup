@@ -1,17 +1,73 @@
 import org.stringtemplate.v4.*;
 import java_cup.runtime.*;
+
 import java.io.*;
 
 /* ---------------------- user component section --------------------*/
 action code {:
-	STGroup stGroup = new STGroupFile("../template/blendify.stg");
-	ST template = stGroup.getInstanceOf("figure");
+	/* Stores the attibutes of an object */
+	public Container generateContainer(Container recent, Container old){
+		Container c = null;
+		if(old == null){
+			c = new Container();
+			if(recent.getLocation() != null)
+				c.setLocation(recent.getLocation());
+			else if(recent.getRotation() != null)
+				c.setRotation(recent.getRotation());
+			else if(recent.getScale() != null)
+				c.setScale(recent.getScale());
+			else if(recent.getSpeed() != null)
+				c.setSpeed(recent.getSpeed());
+			else if(recent.getWeight() != null)
+				c.setWeight(recent.getWeight());
+		}
+		else{
+			if(recent.getLocation() != null)
+				old.setLocation(recent.getLocation());
+			else if(recent.getRotation() != null)
+				old.setRotation(recent.getRotation());
+			else if(recent.getScale() != null)
+				old.setScale(recent.getScale());
+			else if(recent.getSpeed() != null)
+				old.setSpeed(recent.getSpeed());
+			else if(recent.getWeight() != null)
+				old.setWeight(recent.getWeight());
+			c = old;
+		}
+		return c;
+	}
+
+	/* Creates a template for each object */
+	public ST generateST(Type_figure type, Container container){
+		STGroup stGroup = new STGroupFile("../template/blendify.stg");
+		ST template = stGroup.getInstanceOf("primitive_shape");
+		template.add("figure", type.getFigure());
+		template.add("name", type.getId());
+
+		if(container.getLocation() != null){
+			template.add("origin_x", container.getLocation().getX());
+			template.add("origin_y", container.getLocation().getY());
+			template.add("origin_z", container.getLocation().getZ());
+		}
+		if(container.getRotation() != null){
+			template.add("rotation_x", container.getRotation().getX());
+			template.add("rotation_y", container.getRotation().getY());
+			template.add("rotation_z", container.getRotation().getZ());
+		}if(container.getScale() != null){
+			template.add("scale_x", container.getScale().getX());
+			template.add("scale_y", container.getScale().getY());
+			template.add("scale_z", container.getScale().getZ());
+		}
+		return template;
+	}
 
 	/* Generates the python file according to the code of template */
-	public void generate_python_file(String file){
+	public void generate_python_file(String file, ContainerST containerST){
 		try {
 			PrintWriter out = new PrintWriter(file);
-			out.println(template.render());
+			while(!containerST.isEmpty()){
+				out.println(containerST.poll().render());
+			}
 			out.close();
 	    } catch (Exception e) {
 			System.out.println("Exception!!! " + e.getStackTrace());
@@ -33,68 +89,209 @@ parser code {:
 :}
 
 terminal STATIC_OBJECT, DYNAMIC_OBJECT, LEFTBRACKET, RIGHTBRACKET, LOCATION, SCALE;
-terminal SEMICOLON, BEGIN, ACTION, TYPE_FIGURE, DECLARATION, SPEED, WEIGHT;
-terminal COMMA, RIGHTPARENT, LEFTPARENT, START_SIMULATION, END, ROTATION;
-terminal Float REAL;
-terminal String ID;
+terminal SEMICOLON, BEGIN, ACTION, DECLARATION, SPEED, WEIGHT, ROTATION;
+terminal COMMA, RIGHTPARENT, LEFTPARENT, START_SIMULATION, END;
 
-non terminal program, body_declaration, static_declaration, dynamic_declaration, location, scale;
-non terminal body_action, body_program, attribute_declaration, value_static, rotation, speed, weight;
-non terminal value_dynamic, coordinates, value_object, static_dynamic, figure_declaration;
+terminal String ID, TYPE_FIGURE;
+terminal Float REAL;
+
+non terminal program;
+non terminal body_action;
+
+non terminal ST static_declaration, dynamic_declaration;
+non terminal ContainerST static_dynamic, body_declaration, body_program;
+non terminal Container value_static, value_dynamic;
+non terminal Container attribute_declaration, value_object;
+non terminal Type_figure figure_declaration;
+non terminal Coordinates coordinates;
+non terminal Rotation rotation;
+non terminal Scale scale;
+non terminal Location location;
+non terminal Speed speed;
+non terminal Weight weight;
 
 start with program;
 
-program					::= BEGIN ID body_program END
-							{: generate_python_file("blendify_output.py"); :} ;
+program					::= BEGIN ID body_program:b END
+							{: generate_python_file("blendify_output.py", b); :} ;
 
-body_declaration		::= LEFTBRACKET static_declaration static_dynamic RIGHTBRACKET
-							| LEFTBRACKET dynamic_declaration static_dynamic RIGHTBRACKET 
+body_declaration		::= LEFTBRACKET static_declaration:s static_dynamic:s1 RIGHTBRACKET
+							{:
+								ContainerST c = null;
+								if(s1 == null)
+									c = new ContainerST();
+								else
+									c = s1;
+								c.add(s);
+								RESULT = c;
+							:}
+							| LEFTBRACKET dynamic_declaration:d static_dynamic:s RIGHTBRACKET 
+							{:
+								ContainerST c = null;
+								if(s == null)
+									c = new ContainerST();
+								else
+									c = s;
+								c.add(d);
+								RESULT = c;
+							:}
 							;
 
-static_dynamic 			::= static_declaration static_dynamic
-							| dynamic_declaration static_dynamic
+static_dynamic 			::= static_declaration:s static_dynamic:s1
+							{:
+								ContainerST c = null;
+								if(s1 == null){
+									c = new ContainerST();
+									c.add(s);
+								}else{
+									c = s1;
+									c.add(s);
+								}
+								RESULT = c;
+							:}
+							| dynamic_declaration:d static_dynamic:s
+							{:
+								ContainerST c = null;
+								if(s == null){
+									c = new ContainerST();
+									c.add(d);
+								}else{
+									c = s;
+									c.add(d);
+								}
+								RESULT = c;
+							:}
 							|
+							{:
+								ContainerST c = null;
+								RESULT = c;
+							:}
 							;
 
-static_declaration		::= STATIC_OBJECT figure_declaration LEFTBRACKET attribute_declaration RIGHTBRACKET ;
+static_declaration		::= STATIC_OBJECT figure_declaration:f LEFTBRACKET attribute_declaration:a RIGHTBRACKET
+							{:
+								ST template = generateST(f, a);
+								RESULT = template;
+							:} ;
 
-dynamic_declaration		::= DYNAMIC_OBJECT figure_declaration LEFTBRACKET value_object RIGHTBRACKET ;
+dynamic_declaration		::= DYNAMIC_OBJECT figure_declaration:f LEFTBRACKET value_object:v RIGHTBRACKET
+							{:
+								ST template = generateST(f, v);
+								RESULT = template;
+							:} ;
 
 body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
 
-body_program 			::= DECLARATION body_declaration ACTION body_action ;
+body_program 			::= DECLARATION body_declaration:b ACTION body_action
+							{:
+								RESULT = b;
+							:};
 
-figure_declaration 		::= TYPE_FIGURE ID:id
-							{:  template.add("name", id); :} ;
-
-attribute_declaration 	::= value_static attribute_declaration | ;
-
-value_object 			::= value_static value_object 
-							| value_dynamic value_object 
-							| 
+figure_declaration 		::= TYPE_FIGURE:tp ID:id
+							{:  
+								String tp_lowerCase = tp.toLowerCase();
+								Type_figure type = null;
+								if(!tp.equals("Sphere"))
+									type = new Type_figure(tp_lowerCase, id);
+								else
+									type = new Type_figure(id);
+								RESULT = type;
+							:}
 							;
 
-value_static 			::= location
-							| rotation 
-							| scale 
+attribute_declaration 	::= value_static:v attribute_declaration:a
+							{:
+								Container c = generateContainer(v, a);
+								RESULT = c;
+							:}
+							|
+							{:
+								Container c = null;
+								RESULT = c;
+							:}
 							;
 
-value_dynamic 			::= weight 
-							| speed 
+value_object 			::= value_static:v value_object:v1
+							{:
+								Container c = generateContainer(v, v1);
+								RESULT = c;
+							:}
+							| value_dynamic:v value_object:v1
+							{:
+								Container c = generateContainer(v, v1);
+								RESULT = c;
+							:}
+							|
+							{:
+								Container c = null;
+								RESULT = c;
+							:}
 							;
 
-location				::= LOCATION coordinates SEMICOLON ;
+value_static 			::= location:l
+							{:
+								Container c = new Container(l);
+								RESULT = c; 
+							:}
+							| rotation:r
+							{:
+								Container c = new Container(r);
+								RESULT = c; 
+							:}
+							| scale:s
+							{:
+								Container c = new Container(s);
+								RESULT = c; 
+							:}
+							;
 
-rotation				::= ROTATION coordinates SEMICOLON ;
+value_dynamic 			::= weight:w
+							{:
+								Container c = new Container(w);
+								RESULT = c; 
+							:}
+							| speed:s
+							{:
+								Container c = new Container(s);
+								RESULT = c; 
+							:}
+							;
 
-scale 					::= SCALE coordinates SEMICOLON ;
+location				::= LOCATION coordinates:c SEMICOLON 
+							{:	
+								Location l = new Location(c.getX(), c.getY(), c.getZ());
+								RESULT = l;	
+							:}
+							;
 
-weight 					::= WEIGHT REAL SEMICOLON ;
+rotation				::= ROTATION coordinates:c SEMICOLON 
+							{:	
+								Rotation r = new Rotation(c.getX(), c.getY(), c.getZ());
+								RESULT = r;
+							:};
 
-speed 					::= SPEED coordinates SEMICOLON ;
+scale 					::= SCALE coordinates:c SEMICOLON
+							{:	
+								Scale s = new Scale(c.getX(), c.getY(), c.getZ());
+								RESULT = s;
+							:}
+							;
+
+weight 					::= WEIGHT REAL:r SEMICOLON 
+							{: 
+								Weight w = new Weight(r.toString()); 
+								RESULT = w;
+							:};
+
+speed 					::= SPEED coordinates:c SEMICOLON 
+							{: 
+								Speed s = new Speed(c.getX(), c.getY(), c.getZ()); 
+								RESULT = s;
+							:};
 
 coordinates 			::= LEFTPARENT REAL:r1 COMMA REAL:r2 COMMA REAL:r3 RIGHTPARENT
-							{:  template.add("origin_x", r1);
-								template.add("origin_y", r2);
-								template.add("origin_z", r3);
-							:} ;
+							{: 
+								Coordinates c = new Coordinates(r1.toString(), r2.toString(), r3.toString());
+								RESULT = c;			
+							:}
+							;

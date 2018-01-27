@@ -19,9 +19,7 @@ public class utility{
  	    put("Cube", sym.TYPE_FIGURE);		
  	    put("Sphere" , sym.TYPE_FIGURE);		
  	    put("Cone" , sym.TYPE_FIGURE);		
- 	    put("Cylinder" , sym.TYPE_FIGURE);		
- 	    put("Force_field" , sym.TYPE_FIGURE);		
- 	    put("Ramp" , sym.TYPE_FIGURE);		
+ 	    put("Cylinder" , sym.TYPE_FIGURE);			
  	    put("Plane" , sym.TYPE_FIGURE);		
  	}};		
 }

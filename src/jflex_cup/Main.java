@@ -1,7 +1,7 @@
 import java_cup.runtime.Symbol;
 import java.io.*;
 
-class Main {
+public class Main {
 
 	static boolean do_debug_parse = false;
 
@@ -16,9 +16,9 @@ class Main {
 				parse_tree = parser_obj.debug_parse();
 			else
 				parse_tree = parser_obj.parse();
+			System.out.println("Correct analysis");
 		} catch (Exception e) {
 			System.out.println("Incorrect analysis!!");
 		} 
-		System.out.println("Correct analysis");
 	}
 }

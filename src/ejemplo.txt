@@ -1,7 +1,12 @@
 begin grammar
         declaration {
-                static Cube cube {
+                static Cube object1 {
                 	location (-1, 1.2, 1) ;
+                	rotation (2, 3, 4) ;
+                	scale (1.0, 2, 4) ;
+                }
+                dynamic Sphere object2 {
+                	location(1, 4, 5) ;
                 }
         }
         action {

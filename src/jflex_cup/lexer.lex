@@ -48,13 +48,11 @@ private Symbol symbol(int type,Object value){
 "scale"												{return symbol(sym.SCALE);}
 "weight" 											{return symbol(sym.WEIGHT);}
 "speed"												{return symbol(sym.SPEED);}
-"Cube" 												{return symbol(sym.TYPE_FIGURE);}
-"Sphere" 											{return symbol(sym.TYPE_FIGURE);}
-"Cone" 												{return symbol(sym.TYPE_FIGURE);}
-"Cylinder"											{return symbol(sym.TYPE_FIGURE);}
-"Force_field"										{return symbol(sym.TYPE_FIGURE);}
-"Ramp"												{return symbol(sym.TYPE_FIGURE);}
-"Plane"												{return symbol(sym.TYPE_FIGURE);}
+"Cube" 												{return symbol(sym.TYPE_FIGURE, new String(yytext()));}
+"Sphere" 											{return symbol(sym.TYPE_FIGURE, new String(yytext()));}
+"Cone" 												{return symbol(sym.TYPE_FIGURE, new String(yytext()));}
+"Cylinder"											{return symbol(sym.TYPE_FIGURE, new String(yytext()));}
+"Plane"												{return symbol(sym.TYPE_FIGURE, new String(yytext()));}
 ","													{return symbol(sym.COMMA);}
 ")"													{return symbol(sym.RIGHTPARENT);}
 "("													{return symbol(sym.LEFTPARENT);}

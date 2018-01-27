@@ -1,6 +1,26 @@
-figure(name, origin_x, origin_y, origin_z) ::=
+primitive_shape(figure, name, origin_x, origin_y, origin_z, scale_x, scale_y, scale_z,
+		rotation_x, rotation_y, rotation_z) ::=
 <<
-import bpy
-origin = (<origin_x>, <origin_y>, <origin_z>)
-bpy.ops.mesh.primitive_uv_<name>_add(location=origin)
+origin_<name> = (<origin_x>, <origin_y>, <origin_z>)
+<if(figure)>
+bpy.ops.mesh.primitive_<figure>_add(location=origin_<name>)
+<if(scale_x && scale_y && scale_z)>
+bpy.ops.transform.resize(value=(<scale_x>, <scale_y>, <scale_z>))
+<endif>
+<if(rotation_x && rotation_y && rotation_z)>
+bpy.ops.transform.rotate(axis=(<rotation_x>, <rotation_y>, <rotation_z>))
+<endif>
+<name> = bpy.context.object
+<name>.name = '<figure>'
+<else>
+bpy.ops.mesh.primitive_uv_sphere_add(location=origin_<name>)
+<if(scale_x && scale_y && scale_z)>
+bpy.ops.transform.resize(value=(<scale_x>, <scale_y>, <scale_z>))
+<endif>
+<if(rotation_x && rotation_y && rotation_z)>
+bpy.ops.transform.rotate(axis=(<rotation_x>, <rotation_y>, <rotation_z>))
+<endif>
+<name> = bpy.context.object
+<name>.name = 'sphere'
+<endif>
 >>
