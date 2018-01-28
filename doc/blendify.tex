@@ -125,7 +125,7 @@ weight 						& weight 															& weight 					\\\hline
 scale 						& scale 															& scale 					\\\hline
 rotation					& rotation 															& rotation					\\\hline
 location 					& location 															& location					\\\hline
-form figure       			& \makecell{Cube, Sphere, Cone \\ Cylinder, Force\_field, Ramp}     & \makecell{Cube \textbar\space Sphere \textbar\space Cone \\ Cylinder \textbar\space Force\_field \textbar\space Ramp}        														  \\\hline
+form figure       			& \makecell{Cube, Sphere, Cone \\ Cylinder}     & \makecell{Cube \textbar\space Sphere \textbar\space Cone \\ Cylinder \textbar\space}        														  \\\hline
 \end{tabular}
 \caption{\label{tab:KeyWords}Tabla de palabras reservadas.}
 \end{table}
@@ -152,9 +152,9 @@ En \textit{body\_action} podremos ejecutar una serie de acciones que modifiquen 
 \noindent \textit{dynamic\_declaration} ::= dynamic\_object figure\_declaration \{ value\_object \}. \\ \\
 Estas dos ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: Cube, Sphere, Cone, Cylinder, Force\_field, Ramp y Plane. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
 
-\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar\space \textbf{Sphere} \textbar\space \textbf{Cone} \textbar\space \textbf{Cylinder} \textbar\space \textbf{Force\_field} \textbar\space \textbf{Ramp} \textbar\space  \textbf{Plane}.
+\noindent \textit{type\_figure} ::= \textbf{Cube} \textbar\space \textbf{Sphere} \textbar\space \textbf{Cone} \textbar\space \textbf{Cylinder} \textbar\space \textbf{Plane}.
 
-Estas tres ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: \textbf{Cube}, \textbf{Sphere}, \textbf{Cone}, \textbf{Cylinder}, \textbf{Force\_field}, \textbf{Ramp}, \textbf{Plane}. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
+Estas tres ultimas producciones son aquellas que definen los tipos de figuras que podremos especificar: \textbf{Cube}, \textbf{Sphere}, \textbf{Cone}, \textbf{Cylinder}, \textbf{Plane}. Además, el identificador que será posible concretar serán aquellos que comiencen por letra, sin distinción entre minúsculas y mayúsculas, seguido de letras o números.
 
 \noindent \textit{figure\_declaration} ::= type\_figure id.
 
@@ -175,15 +175,15 @@ es dinámica, el objeto que se cree pueda tener cualquier valor.
 
 \textit{value\_static} y \textit{value\_dynamic} serán aquellas producciones que permitan definir si un objeto será estático, es decir, no podrá moverse, o dinámico, tendrá una velocidad y peso asociados.
 
-\noindent \textit{location} ::= \textbf{location} coordinates.
+\noindent \textit{location} ::= \textbf{location} coordinates \textbf{`;'}.
 
-\noindent \textit{rotation} ::= \textbf{rotation} coordinates.
+\noindent \textit{rotation} ::= \textbf{rotation} coordinates \textbf{`;'}.
 
-\noindent \textit{scale} ::=  \textbf{scale} coordinates.
+\noindent \textit{scale} ::=  \textbf{scale} coordinates \textbf{`;'}.
 
 \noindent \textit{weight} ::= \textbf{weight} real \textbf{`;'}.
 
-\noindent \textit{speed} ::= \textbf{speed} coordinates.
+\noindent \textit{speed} ::= \textbf{speed} coordinates \textbf{`;'}.
 
 Con estas 5 producciones se intenta definir la posición, rotación, escala, peso y velocidad de un objeto en un escenario específico. Todas ellas se formarán mediante coordenadas (conjunto de 3 valores definidos por los ejes `x', `y', `z' especificado en \textit{coordinates}) menos el peso, que será un número real.
 
