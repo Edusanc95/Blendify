@@ -2,11 +2,14 @@
 grammar blendify;
 
 @header {
-    import org.stringtemplate.v4.*;
-    import java.io.PrintWriter;
+	import org.stringtemplate.v4.*;
+	import java.io.PrintWriter;
 }// end header
 
 @members {
+	/* Variable to modify the file name */
+	static int count = 1;
+
 	/* Stores the attibutes of an object */
 	public Container generateContainer(Container recent, Container old){
 		Container c = null;
@@ -64,24 +67,25 @@ grammar blendify;
 	}
 
 	/* Generates the python file according to the code of template */
-	public void generate_python_file(String file, ContainerST containerST){
+	public void generate_python_file(ContainerST containerST){
+		String file = "blendify_output" + (count++) + ".py";
 		try {
 			PrintWriter out = new PrintWriter(file);
 			while(!containerST.isEmpty()){
 				out.println(containerST.poll().render());
 			}
 			out.close();
-	    } catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("Exception!!! " + e.getStackTrace());
-	    }
-	    System.out.println("\n" + file + " generated");
+		}
+		System.out.println("\n" + file + " generated");
 	}
 }// end members
 
 program					
 	: BEGIN ID body_program END 
 	{
-		generate_python_file("blendify_output.py", $body_program.containerST);
+		generate_python_file($body_program.containerST);
 	} ;
 
 body_program returns

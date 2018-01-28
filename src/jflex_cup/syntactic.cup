@@ -68,10 +68,10 @@ action code {:
 				out.println(containerST.poll().render());
 			}
 			out.close();
-	    } catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("Exception!!! " + e.getStackTrace());
-	    }
-	    System.out.println(parser.file + " generated");
+		}
+		System.out.println("\n" + parser.file + " generated");
 	}
 :}// end action code
 
@@ -81,12 +81,12 @@ parser code {:
 
 	/* Reports a syntax error when some error occurs */
 	public void syntax_error(Symbol s) {
-  		report_error("Syntax error in line " + s.left + " and column " + s.right, null);
+		report_error("Syntax error in line " + s.left + " and column " + s.right, null);
 	}
 
 	/* Reports an error when the program cannot be recovered */
 	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
-  		report_fatal_error("", null);
+		report_fatal_error("", null);
 	}
 :}// end parser code
 

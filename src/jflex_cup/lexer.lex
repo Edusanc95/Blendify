@@ -24,8 +24,11 @@ private Symbol symbol(int type,Object value){
 	return new Symbol(type,yyline,yycolumn,value); 
 } 
 
-
 %}
+
+Real = -?(([0-9]+)|([0-9]*\.[0-9]+))
+Identifier = [a-z]+[a-zA-Z0-9_]*
+Whitespace = [ \t\n\r\f]
 
 %%
 
@@ -58,13 +61,17 @@ private Symbol symbol(int type,Object value){
 ","													{return symbol(sym.COMMA);}
 ")"													{return symbol(sym.RIGHTPARENT);}
 "("													{return symbol(sym.LEFTPARENT);}
--?(([0-9]+)|([0-9]*\.[0-9]+))						{return symbol(sym.REAL, new Float(yytext()));}
-[a-z]+[a-zA-Z0-9_]* 								{String token = yytext();
+
+/* real */
+{Real}												{return symbol(sym.REAL, new Float(yytext()));}
+/* identifier */
+{Identifier}										{String token = yytext();
 													if(utility.keyWord.containsKey(token))
 														return symbol(utility.keyWord.get(token), new String(yytext()));
 													else
 														return symbol(sym.ID, new String(yytext()));}
-[ \t\n\r\f]	  										{ /* ignore spaces */ }
+
+{Whitespace}  										{ /* ignore spaces */ }
 .													{System.err.println("Ilegal character: " + "\'" + yytext() + "\' "
 													 + " line: " + (yyline + 1) + " and column: " + (yycolumn + 1));}
 }													/* end YYINITIAL */

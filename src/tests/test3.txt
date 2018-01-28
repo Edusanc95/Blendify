@@ -1,5 +1,10 @@
 begin grammar
         declaration {
+                /*
+                ignore
+                this
+                comment
+                */
                 static Cube object1 {
                         scale (3, 3, 3) ;
                 }

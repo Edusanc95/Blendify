@@ -1,7 +1,6 @@
 #!/usr/bin/make -f
 # -*- mode:makefile -*-
 
-ANTLR 	= antlr4
 JC 		= javac
 JAVA 	= java
 
@@ -17,7 +16,7 @@ java:
 	$(JC) *.java
 
 antlr:
-	$(ANTLR) *.g4
+	java -Xmx500M -cp "/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH" org.antlr.v4.Tool *.g4
 	
 clean:
 	$(RM) *~
