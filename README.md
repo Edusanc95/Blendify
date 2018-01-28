@@ -18,7 +18,6 @@ $ export CLASSPATH="$CLASSPATH:/usr/share/java/cup.jar:/usr/share/java/JFlex.jar
 ## Installation of Antlr and StringTemplate in Linux
 ```
 $ cd /usr/local/lib
-$ sudo apt-get install antlr4
 $ sudo wget http://stringtemplate.org/download/ST-4.0.8.jar
 $ sudo wget http://www.antlr.org/download/antlr-4.7.1-complete.jar
 $ export CLASSPATH=".:/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH"
