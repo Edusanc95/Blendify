@@ -189,21 +189,7 @@ Con estas 5 producciones se intenta definir la posición, rotación, escala, pes
 
 \noindent \textit{coordinates} ::= \textbf{`('} real \textbf{`,'} real \textbf{`,'} real \textbf{`)'}.
 
-\section{Jflex y Cup}
-
-\subsection{Léxico}
-
-Para la parte léxica hemos usado \textit{JFlex}, detectando expresiones regulares para definir los terminales del lenguaje que usaremos más adelante.
-El funcionamiento básico consiste en que cuando se detecta una de las palabras claves, Jflex retornará un objeto de la clase Symbol para que en el análisis sintáctico se trate de la manera correspondiente.
-Es en el análisis léxico donde tenemos la posibilidad de dar opción a que pueda haber comentarios en nuestra gramática además de informar de error si se ha escrito en el archivo fuente algún símbolo desconocido. El procedimiento para ignorar los comentarios en CUP es recogiendo los tokens que JFlex retorna y utilizarlos como terminales. Consiste en descartar todo lo que este entre medias de `/*' y `*/', incluyendo dichos símbolos. Para ello, una vez que encontramos `/*', pasamos a un estado ``Comment'', el cuál no retorna ningún símbolo ni hace ningún tipo de análisis léxico.
-
-\subsection{Sintáctico}
-
-En esta parte, se recogen los \textit{tokens} que el analizador léxico ha reconocido. Cup es el encargado de analizar y verificar que los símbolos que recibe están estructurados de una manera correcta mediante un conjunto de producciones. Además, se encarga de detectar errores para informar de que alguna declaración está mal construida o que los valores no son los correctos. Tiene
-la posibilidad de recuperación, pero en caso de no ser posible, mandará un mensaje a la salida de error para informar al usuario en la
-línea y columna donde se produjo tal error.
-
-\subsection{Semántico}
+\section{Análisis Semántico}
 
 Dado que el objetivo de este proyecto es poder generar código \textit{Python} a partir de nuestro lenguaje, hemos diseñado un pequeño prototipo tanto para \textit{CUP} como para \textit{ANTLR} en el cual crearemos código para la creación de los objetos estáticos. Básicamente se trata de una prueba de concepto con la cuál demostramos nuestros conocimientos sobre dicha materia, la cuál también es escalable para un proyecto completo y finalizado ya que solo se trataría de añadir acciones a nuestras reglas semánticas ya escritas y diseñadas. Dado que estas reglas semánticas están escritas en código Java, serán las mismas tanto en la implementación en \textit{CUP} como en \textit{ANTLR}, exceptuando algunas adaptaciones (principalmente por las diferencias de sintaxis entre ambas herramientas a la hora de guardar y acceder a un atributo).
 
