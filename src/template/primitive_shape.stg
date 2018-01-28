@@ -1,9 +1,14 @@
 primitive_shape(figure, name, origin_x, origin_y, origin_z, scale_x, scale_y, scale_z,
 		rotation_x, rotation_y, rotation_z) ::=
 <<
-origin_<name> = (<origin_x>, <origin_y>, <origin_z>)
 <if(figure)>
+<if(origin_x && origin_y && origin_z)>
+origin_<name> = (<origin_x>, <origin_y>, <origin_z>)
 bpy.ops.mesh.primitive_<figure>_add(location=origin_<name>)
+<else>
+origin_<name> = (0, 0, 0)
+bpy.ops.mesh.primitive_<figure>_add(location=origin_<name>)
+<endif>
 <if(scale_x && scale_y && scale_z)>
 bpy.ops.transform.resize(value=(<scale_x>, <scale_y>, <scale_z>))
 <endif>
@@ -13,7 +18,13 @@ bpy.ops.transform.rotate(axis=(<rotation_x>, <rotation_y>, <rotation_z>))
 <name> = bpy.context.object
 <name>.name = '<figure>'
 <else>
+<if(origin_x && origin_y && origin_z)>
+origin_<name> = (<origin_x>, <origin_y>, <origin_z>)
 bpy.ops.mesh.primitive_uv_sphere_add(location=origin_<name>)
+<else>
+origin_<name> = (0, 0, 0)
+bpy.ops.mesh.primitive_uv_sphere_add(location=origin_<name>)
+<endif>
 <if(scale_x && scale_y && scale_z)>
 bpy.ops.transform.resize(value=(<scale_x>, <scale_y>, <scale_z>))
 <endif>

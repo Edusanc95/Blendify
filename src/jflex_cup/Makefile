@@ -1,10 +1,15 @@
+#!/usr/bin/make -f
+# -*- mode:makefile -*-
+
 JFLEX 	= jflex
 CUP 	= cup
 JC 		= javac
 JAVA 	= java
 
+TEST 	= ../tests
+
 all: jflex cup java
-	$(JAVA) Main ../ejemplo.txt
+	$(JAVA) Main $(TEST)/*.txt
 
 java:
 	$(JC) *.java

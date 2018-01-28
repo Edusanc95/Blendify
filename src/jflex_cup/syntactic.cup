@@ -1,7 +1,6 @@
 import org.stringtemplate.v4.*;
 import java_cup.runtime.*;
-
-import java.io.*;
+import java.io.PrintWriter;
 
 /* ---------------------- user component section --------------------*/
 action code {:
@@ -62,9 +61,9 @@ action code {:
 	}
 
 	/* Generates the python file according to the code of template */
-	public void generate_python_file(String file, ContainerST containerST){
+	public void generate_python_file(ContainerST containerST){
 		try {
-			PrintWriter out = new PrintWriter(file);
+			PrintWriter out = new PrintWriter(parser.file);
 			while(!containerST.isEmpty()){
 				out.println(containerST.poll().render());
 			}
@@ -72,11 +71,14 @@ action code {:
 	    } catch (Exception e) {
 			System.out.println("Exception!!! " + e.getStackTrace());
 	    }
-	    System.out.println(file + " generated");
+	    System.out.println(parser.file + " generated");
 	}
-:}
+:}// end action code
 
 parser code {:
+	/* name of the python file */
+	String file = "";
+
 	/* Reports a syntax error when some error occurs */
 	public void syntax_error(Symbol s) {
   		report_error("Syntax error in line " + s.left + " and column " + s.right, null);
@@ -86,7 +88,7 @@ parser code {:
 	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
   		report_fatal_error("", null);
 	}
-:}
+:}// end parser code
 
 terminal STATIC_OBJECT, DYNAMIC_OBJECT, LEFTBRACKET, RIGHTBRACKET, LOCATION, SCALE;
 terminal SEMICOLON, BEGIN, ACTION, DECLARATION, SPEED, WEIGHT, ROTATION;
@@ -113,7 +115,18 @@ non terminal Weight weight;
 start with program;
 
 program					::= BEGIN ID body_program:b END
-							{: generate_python_file("blendify_output.py", b); :} ;
+							{:
+								generate_python_file(b);
+							:} ;
+
+body_program 			::= DECLARATION body_declaration:b ACTION body_action
+							{:
+								STGroup stGroup = new STGroupFile("../template/import.stg");
+								ST template = stGroup.getInstanceOf("import_sentence");
+								template.add("name", "bpy");
+								b.add(template);
+								RESULT = b;
+							:};
 
 body_declaration		::= LEFTBRACKET static_declaration:s static_dynamic:s1 RIGHTBRACKET
 							{:
@@ -136,6 +149,14 @@ body_declaration		::= LEFTBRACKET static_declaration:s static_dynamic:s1 RIGHTBR
 								RESULT = c;
 							:}
 							;
+
+body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
+
+static_declaration		::= STATIC_OBJECT figure_declaration:f LEFTBRACKET attribute_declaration:a RIGHTBRACKET
+							{:
+								ST template = generateST(f, a);
+								RESULT = template;
+							:} ;
 
 static_dynamic 			::= static_declaration:s static_dynamic:s1
 							{:
@@ -168,28 +189,11 @@ static_dynamic 			::= static_declaration:s static_dynamic:s1
 							:}
 							;
 
-static_declaration		::= STATIC_OBJECT figure_declaration:f LEFTBRACKET attribute_declaration:a RIGHTBRACKET
-							{:
-								ST template = generateST(f, a);
-								RESULT = template;
-							:} ;
-
 dynamic_declaration		::= DYNAMIC_OBJECT figure_declaration:f LEFTBRACKET value_object:v RIGHTBRACKET
 							{:
 								ST template = generateST(f, v);
 								RESULT = template;
 							:} ;
-
-body_action 			::= LEFTBRACKET START_SIMULATION SEMICOLON RIGHTBRACKET ;
-
-body_program 			::= DECLARATION body_declaration:b ACTION body_action
-							{:
-								STGroup stGroup = new STGroupFile("../template/import.stg");
-								ST template = stGroup.getInstanceOf("import_sentence");
-								template.add("name", "bpy");
-								b.add(template);
-								RESULT = b;
-							:};
 
 figure_declaration 		::= TYPE_FIGURE:tp ID:id
 							{:  

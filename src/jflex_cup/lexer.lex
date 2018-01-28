@@ -4,12 +4,12 @@ import java_cup.runtime.Symbol;
 %%
 
 /* ----------------- declaration and option section -----------------*/
-
-%standalone
 %class analex
+%switch
 %line
 %column
 %cup
+%standalone
 %state COMMENT
 
 %{
@@ -32,8 +32,10 @@ private Symbol symbol(int type,Object value){
 /* ---------- rules and actions ---------------*/
 <YYINITIAL> {										/* begin YYINITIAL */
 "/*"												{yybegin(COMMENT);}
-"*/"												{ /*ERROR*/ }
-"begin"												{return symbol(sym.BEGIN);}
+"//".*                                    			{ /* DO NOTHING */ }
+"*/"												{System.err.println("Beginning of comment incorrect: " + 
+													"\'" + yytext() + "\' " + " line: " + (yyline + 1) + 
+													" and column: " + (yycolumn + 1));}
 "end"												{return symbol(sym.END);}
 "declaration"										{return symbol(sym.DECLARATION);}
 "action"											{return symbol(sym.ACTION);}
@@ -69,5 +71,5 @@ private Symbol symbol(int type,Object value){
 
 <COMMENT> 											{
 "*/"	  											{yybegin(YYINITIAL);}
-<<EOF>>   											{/*ERROR*/}
+<<EOF>>   											{System.err.println("Unexpected file end");}
 }

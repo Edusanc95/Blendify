@@ -1,10 +1,28 @@
-all:
-	java -jar /usr/local/lib/antlr-4.6-complete.jar blendify.g4
-	javac *.java
+#!/usr/bin/make -f
+# -*- mode:makefile -*-
 
-test:
-	java org.antlr.v4.gui.TestRig blendify program ejemplo.txt -gui
+ANTLR 	= antlr4
+JC 		= javac
+JAVA 	= java
 
+GRAMMAR = blendify
+ST_PROD = program
+
+TEST 	= ../tests
+
+all: antlr java
+	$(JAVA) org.antlr.v4.gui.TestRig $(GRAMMAR) $(ST_PROD) $(TEST)/*.txt
+
+java:
+	$(JC) *.java
+
+antlr:
+	$(ANTLR) *.g4
+	
 clean:
-	rm *.class
-
+	$(RM) *~
+	$(RM) *.class
+	$(RM) *.tokens
+	$(RM) *.interp
+	$(RM) *.py
+	$(RM) blendify*.java

@@ -1,0 +1,17 @@
+begin grammar
+        declaration {
+                static Cube object1 {
+                        scale (3, 3, 3) ;
+                }
+                dynamic Sphere object2 {
+                	location (1, 4, 5) ;
+                }
+                // ignore this comment
+                static Cylinder object3 {
+                        rotation (1.3, 2.3, 5) ;
+                }
+        }
+        action {
+                start_simulation ;
+        }
+end
