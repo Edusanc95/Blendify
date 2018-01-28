@@ -78,5 +78,5 @@ Whitespace = [ \t\n\r\f]
 <COMMENT> 											{
 "*/"	  											{yybegin(YYINITIAL);}
 <<EOF>>   											{System.err.println("Unexpected file end");}
-.|[\t\r\n\f]                                                                                              {/* DO NOTHING */}                          
+.|[\t\r\n\f]										{/* DO NOTHING */}                          
 }
