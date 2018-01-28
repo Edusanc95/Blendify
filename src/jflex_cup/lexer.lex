@@ -5,7 +5,6 @@ import java_cup.runtime.Symbol;
 
 /* ----------------- declaration and option section -----------------*/
 %class analex
-%switch
 %line
 %column
 %cup
@@ -79,4 +78,5 @@ Whitespace = [ \t\n\r\f]
 <COMMENT> 											{
 "*/"	  											{yybegin(YYINITIAL);}
 <<EOF>>   											{System.err.println("Unexpected file end");}
+.|[\t\r\n\f]                                                                                              {/* DO NOTHING */}                          
 }
