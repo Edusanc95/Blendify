@@ -3,7 +3,7 @@ This system is a language processor that intends to create a python file from an
 teach Physic.
 
 ## Prerequisites
-In order to use this system it is necessary to install some tools:
+In order to use this system it is necessary to install these tools:
 * Jflex
 * Cup
 * Antlr
