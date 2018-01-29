@@ -19,4 +19,12 @@ public class ContainerST{
 	public boolean isEmpty(){
 		return list.size() == 0;
 	}
+
+	public boolean contains(Object obj){
+		return list.contains(obj);
+	}
+
+	public LinkedList<ST> getList(){
+		return list;
+	}
 }

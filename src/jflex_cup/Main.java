@@ -22,7 +22,7 @@ public class Main {
 				System.out.println("Correct analysis");
 			}
 		} catch (Exception e) {
-				System.out.println("Incorrect analysis!!");
+				System.out.println("Incorrect analysis");
 		} 
 	}
 }

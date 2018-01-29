@@ -1,9 +1,15 @@
 import org.stringtemplate.v4.*;
 import java_cup.runtime.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.LinkedList;
 import java.io.PrintWriter;
 
 /* ---------------------- user component section --------------------*/
 action code {:
+	/* Stores the tokens that have produced an error */
+	LinkedList<String> err_token = new LinkedList<String>();
+
 	/* Stores the attibutes of an object */
 	public Container generateContainer(Container recent, Container old){
 		Container c = null;
@@ -60,6 +66,24 @@ action code {:
 		return template;
 	}
 
+	/* check if there are two variables with the same name */
+	public boolean checkVariables(ContainerST containerST){
+		final LinkedList<ST> st = containerST.getList();
+		final List<String> aux = new ArrayList<String>();
+	    for (ST template : st) {
+	        final String name = template.getAttribute("name").toString();
+
+	        if(aux.contains(name)){
+	        	err_token.add(name);
+	        	return true;
+	        }
+
+	       	aux.add(name);
+	    }
+
+    	return false;
+	}
+
 	/* Generates the python file according to the code of template */
 	public void generate_python_file(ContainerST containerST){
 		try {
@@ -79,14 +103,19 @@ parser code {:
 	/* name of the python file */
 	String file = "";
 
+	/* Reports an error when someting occurs */
+	public void emit_error(String message) throws java.lang.Exception {
+		report_fatal_error("\n" + message, null);
+	}
+
 	/* Reports a syntax error when some error occurs */
 	public void syntax_error(Symbol s) {
-		report_error("Syntax error in line " + s.left + " and column " + s.right, null);
+		report_error("\n" + "Syntax error in line " + s.left + " and column " + s.right, null);
 	}
 
 	/* Reports an error when the program cannot be recovered */
 	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
-		report_fatal_error("", null);
+		report_fatal_error("Program could not be repaired", null);
 	}
 :}// end parser code
 
@@ -136,6 +165,9 @@ body_declaration		::= LEFTBRACKET static_declaration:s static_dynamic:s1 RIGHTBR
 								else
 									c = s1;
 								c.add(s);
+								if(checkVariables(c))
+									parser.emit_error("Variables with the same name: "
+										+ err_token.poll());
 								RESULT = c;
 							:}
 							| LEFTBRACKET dynamic_declaration:d static_dynamic:s RIGHTBRACKET 
@@ -146,6 +178,9 @@ body_declaration		::= LEFTBRACKET static_declaration:s static_dynamic:s1 RIGHTBR
 								else
 									c = s;
 								c.add(d);
+								if(checkVariables(c))
+									parser.emit_error("Variables with the same name: "
+										+ err_token.poll());
 								RESULT = c;
 							:}
 							;
